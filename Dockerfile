@@ -19,4 +19,4 @@ COPY . /app/
 EXPOSE 8080
 
 # 启动应用，监听 0.0.0.0 以允许外部访问
-CMD ["sh", "-c", "cd /app/web && pnpm serve -- --host 0.0.0.0"]
+CMD ["sh", "-c", "cd /app/web && pnpm serve --host 0.0.0.0"]
