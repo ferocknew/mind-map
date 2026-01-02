@@ -34,7 +34,7 @@
             <div class="avatar">
               <span class="icon el-icon-user"></span>
             </div>
-            <div class="content" :style="isDark ? { color: '#fff' } : { color: themeColor }">{{ item.content }}</div>
+            <div class="content" :style="isDark ? { color: '#fff' } : {}">{{ item.content }}</div>
             <el-button
               class="retryBtn"
               size="mini"
@@ -48,7 +48,7 @@
             <div class="avatar">
               <span class="icon iconfont iconAIshengcheng"></span>
             </div>
-            <div class="content" :style="isDark ? { color: '#fff' } : { color: themeColor }">
+            <div class="content" :style="isDark ? { color: '#fff' } : {}">
               <div v-if="item.loading" class="loadingIndicator">
                 <span class="dot"></span>
                 <span class="dot"></span>
