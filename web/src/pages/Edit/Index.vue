@@ -12,7 +12,7 @@
 
 <script>
 import Toolbar from './components/Toolbar.vue'
-import Edit from './components/Edit.vue'
+import Edit from './components/edit.vue'
 import { mapState, mapMutations } from 'vuex'
 import { getLocalConfig } from '@/api'
 

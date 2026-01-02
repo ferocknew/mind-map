@@ -162,6 +162,8 @@ export default {
           .clear-btn {
               color: #F56C6C;
               margin-right: 20px;
+              padding-left: 12px;
+              padding-right: 12px;
               &:hover {
                   opacity: 0.8;
               }
@@ -278,6 +280,8 @@ export default {
           
           .del-btn {
                color: #909399;
+               padding-left: 12px;
+               padding-right: 12px;
                &:hover {
                    color: #F56C6C;
                }

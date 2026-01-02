@@ -92,7 +92,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { createUid } from 'simple-mind-map/src/utils'
-import AiConfigItemEditor from './AiConfigItemEditor.vue'
+import AiConfigItemEditor from './ai_config_item_editor.vue'
 
 export default {
   name: 'AiLocalConfigManager',

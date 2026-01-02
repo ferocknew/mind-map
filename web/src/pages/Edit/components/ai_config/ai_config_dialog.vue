@@ -127,7 +127,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import AiLocalConfigManager from './AiLocalConfigManager.vue'
+import AiLocalConfigManager from './ai_local_config_manager.vue'
 
 export default {
   name: 'AiConfigDialog',

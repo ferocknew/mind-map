@@ -8,7 +8,13 @@
       "mcp__memory__create_relations",
       "Bash(git mv:*)",
       "Bash(find:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(git rm:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git restore:*)",
+      "Bash(cat:*)",
+      "Bash(/bin/ls:*)"
     ]
   }
 }
