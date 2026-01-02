@@ -7,6 +7,7 @@
     width="800px"
     append-to-body
     :close-on-click-modal="false"
+    :custom-class="'aiChatHistoryDialog ' + (isDark ? 'isDark' : '')"
   >
     <div class="header" slot="title">
         <div class="left">
@@ -66,6 +67,7 @@
 <script>
 import { getSessions, deleteSession, clearAllSessions } from '@/utils/ai_chat_storage'
 import { formatDate } from 'simple-mind-map/src/utils'
+import { mapState } from 'vuex'
 
 export default {
   data() {
@@ -74,6 +76,11 @@ export default {
       historyList: [],
       loading: false
     }
+  },
+  computed: {
+    ...mapState({
+      isDark: state => state.localConfig.isDark
+    })
   },
   created() {
       this.$bus.$on('show_ai_history', this.show)
@@ -134,7 +141,7 @@ export default {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 20px 20px 10px;
+          padding: 20px;
           
           .left {
               display: flex;
@@ -154,7 +161,7 @@ export default {
           
           .clear-btn {
               color: #F56C6C;
-              margin-right: 30px;
+              margin-right: 20px;
               &:hover {
                   opacity: 0.8;
               }
@@ -163,7 +170,7 @@ export default {
   }
   
     /deep/ .el-dialog__body {
-        padding: 0 20px 20px;
+        padding: 10px 20px 20px;
     }
 
   .tips {
@@ -172,7 +179,8 @@ export default {
       color: #409eff;
       padding: 8px 16px;
       border-radius: 4px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      margin-top: 0;
       font-size: 12px;
       display: flex;
       align-items: center;
@@ -277,5 +285,98 @@ export default {
       }
     }
   }
+}
+</style>
+
+<style lang="less">
+.aiChatHistoryDialog {
+   &.isDark {
+       &.el-dialog {
+           background-color: #262a2e;
+           
+           .el-dialog__header {
+               .header {
+                   .left {
+                       i {
+                           color: hsla(0,0%,100%,.7);
+                       }
+                       .title {
+                           color: #fff;
+                       }
+                       .sub-title {
+                           color: hsla(0,0%,100%,.7);
+                       }
+                   }
+               }
+               .el-dialog__headerbtn {
+                   .el-dialog__close {
+                       color: hsla(0,0%,100%,.7);
+                   }
+               }
+           }
+           
+           .el-dialog__body {
+               .tips {
+                   background-color: #1d1e1f;
+                   border-color: #363b3f;
+                   color: #409eff;
+               }
+               
+               .historyList {
+                   .empty {
+                       color: hsla(0,0%,100%,.5);
+                   }
+                   
+                   .historyItem {
+                       border-color: #444;
+                       background-color: transparent;
+                       
+                       &:hover {
+                           box-shadow: 0 2px 12px 0 rgba(255,255,255,.1);
+                       }
+                       
+                       .info {
+                           .top-row {
+                               .tag {
+                                   background-color: #363b3f;
+                                   color: #409eff;
+                               }
+                               .time {
+                                   color: hsla(0,0%,100%,.6);
+                               }
+                           }
+                           
+                           .content-row {
+                               i {
+                                   color: hsla(0,0%,100%,.6);
+                               }
+                               .text {
+                                   color: #fff;
+                               }
+                           }
+                           
+                           .bottom-row {
+                               i {
+                                   color: hsla(0,0%,100%,.5);
+                               }
+                               .model {
+                                   color: hsla(0,0%,100%,.5);
+                               }
+                           }
+                       }
+                       
+                       .actions {
+                           .del-btn {
+                               color: hsla(0,0%,100%,.5);
+                               &:hover {
+                                   color: #F56C6C;
+                               }
+                           }
+                       }
+                   }
+               }
+           }
+       }
+   }
 }
 </style>

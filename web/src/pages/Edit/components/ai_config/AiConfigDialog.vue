@@ -1,6 +1,7 @@
 <template>
   <el-dialog
     class="aiConfigDialog"
+    :custom-class="'aiConfigDialog ' + (isDark ? 'isDark' : '')"
     :title="$t('ai.AIConfiguration')"
     :visible.sync="dialogVisible"
     width="680px"
@@ -156,6 +157,9 @@ export default {
   },
   computed: {
     ...mapState(['aiConfig']),
+    ...mapState({
+      isDark: state => state.localConfig.isDark
+    }),
     isLocalMode() {
       return this.aiConfig.mode === 'local'
     }
@@ -380,3 +384,135 @@ export default {
   }
 }
 </style>
+
+<style lang="less">
+.aiConfigDialog {
+  &.isDark {
+    &.el-dialog {
+      background-color: #262a2e;
+      
+      .el-dialog__header {
+        .el-dialog__title {
+          color: #fff;
+        }
+        .el-dialog__headerbtn {
+          .el-dialog__close {
+            color: hsla(0,0%,100%,.7);
+          }
+        }
+      }
+      
+      .el-dialog__body {
+        .aiConfigBox {
+          .subtitle {
+            color: hsla(0,0%,100%,.7);
+          }
+          
+          .current-mode-card {
+            background: #1d1e1f;
+            border-color: #444;
+            
+            .left {
+              .icon {
+                background: #363b3f;
+                color: #409eff;
+              }
+              
+              .info {
+                .label {
+                  color: hsla(0,0%,100%,.6);
+                }
+                .value {
+                  color: #409eff;
+                }
+              }
+            }
+          }
+          
+          .tabs-container {
+            background: #1d1e1f;
+            
+            .tab-item {
+              color: hsla(0,0%,100%,.7);
+              
+              &:hover {
+                background: rgba(255, 255, 255, 0.1);
+              }
+              
+              &.active {
+                background: #363b3f;
+                color: #fff;
+              }
+            }
+          }
+          
+          .content-area {
+            .desc {
+              color: hsla(0,0%,100%,.7);
+            }
+            
+            .local-manager-btn {
+              border-color: #444;
+              color: #fff;
+              background: transparent;
+              
+              &:hover {
+                border-color: #409eff;
+                background: rgba(64, 158, 255, 0.1);
+              }
+              
+              span {
+                color: #fff;
+              }
+              
+              i {
+                color: hsla(0,0%,100%,.6);
+              }
+            }
+            
+            .el-input {
+              .el-input__inner {
+                background-color: #1d1e1f;
+                border-color: #444;
+                color: #fff;
+                
+                &::placeholder {
+                  color: hsla(0,0%,100%,.4);
+                }
+              }
+            }
+            
+            .el-textarea {
+              .el-textarea__inner {
+                background-color: #1d1e1f;
+                border-color: #444;
+                color: #fff;
+                
+                &::placeholder {
+                  color: hsla(0,0%,100%,.4);
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      .el-dialog__footer {
+        border-top-color: #444;
+        
+        .el-button--default {
+          background-color: transparent;
+          border-color: #444;
+          color: hsla(0,0%,100%,.7);
+          
+          &:hover {
+            border-color: #409eff;
+            color: #409eff;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
+
