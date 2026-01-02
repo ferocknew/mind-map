@@ -23,59 +23,122 @@
 
 已上架[uTools](https://www.u.tools/)插件应用市场，可直接在`uTools`插件应用市场中搜索`思绪`进行安装，也可以直接访问该地址：[主页](https://www.u-tools.cn/plugins/detail/%E6%80%9D%E7%BB%AA%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE/)，点击右侧的【启动】按钮进行安装
 
-# 库
+# 项目介绍
 
-- 一个 `js` 思维导图库，不依赖任何框架，可以用来快速完成 Web 思维导图产品的开发。
+## 1. simple-mind-map 核心库
 
->  开发文档：[https://wanglin2.github.io/mind-map-docs/](https://wanglin2.github.io/mind-map-docs/)
+一个不依赖任何框架的 JavaScript 思维导图库，可以用来快速完成 Web 思维导图产品的开发。
 
-- 一个 Web 思维导图，基于思维导图库、`Vue2.x`、`ElementUI` 开发，支持操作电脑本地文件，可以当做一个在线版思维导图应用使用，也可以自部署和二次开发。
+**核心特性：**
+- 插件化架构，按需引入，减小打包体积
+- 支持多种布局结构（逻辑结构图、思维导图、组织结构图、目录组织图、时间轴、鱼骨图等）
+- 丰富的主题系统和样式定制
+- 完整的命令模式（支持撤销/重做）
+- 节点复用机制，优化渲染性能
 
->  在线地址：[https://wanglin2.github.io/mind-map/](https://wanglin2.github.io/mind-map/)
+> 开发文档：[https://wanglin2.github.io/mind-map-docs/](https://wanglin2.github.io/mind-map-docs/)
 
-- 云存储版本，如果你需要带后端的云存储版本，可以尝试我们开发的另一个项目[理想文档](https://github.com/wanglin2/lx-doc)。
+## 2. Web 应用
+
+基于核心库、Vue 2.x 和 ElementUI 开发的 Web 思维导图应用，支持操作电脑本地文件，可以当做一个在线版思维导图应用使用，也可以自部署和二次开发。
+
+**主要功能：**
+- AI 智能辅助（支持多种 AI 服务）
+- 富文本编辑、数学公式
+- 协同编辑、演示模式
+- 多格式导入导出
+- 本地文件管理
+
+> 在线地址：[https://wanglin2.github.io/mind-map/](https://wanglin2.github.io/mind-map/)
+
+## 3. 云存储版本
+
+如果你需要带后端的云存储版本，可以尝试我们开发的另一个项目[理想文档](https://github.com/wanglin2/lx-doc)。
 
 # 特性
 
-- [x] 插件化架构，除核心功能外，其他功能作为插件提供，按需使用，减小打包体积
-- [x] 支持逻辑结构图（向左、向右逻辑结构图）、思维导图、组织结构图、目录组织图、时间轴（横向、竖向）、鱼骨图等结构
-- [x] 内置多种主题，允许高度自定义样式，支持注册新主题
-- [x] 节点内容支持文本（普通文本、富文本）、图片、图标、超链接、备注、标签、概要、数学公式
-- [x] 节点支持拖拽（拖拽移动、自由调整）、多种节点形状；支持扩展节点内容、支持使用 DDM 完全自定义节点内容
-- [x] 支持画布拖动、缩放
-- [x] 支持鼠标按键拖动选择和 Ctrl+左键两种多选节点方式
-- [x] 支持导出为`json`、`png`、`svg`、`pdf`、`markdown`、`xmind`、`txt`，支持从`json`、`xmind`、`markdown`导入
-- [x] 支持快捷键、前进后退、关联线、搜索替换、小地图、水印、滚动条、手绘风格、彩虹线条、标记、外框
-- [x] 提供丰富的配置，满足各种场景各种使用习惯
-- [x] 支持协同编辑
-- [x] 支持演示模式
-- [x] 更多功能等你来发现
+## 核心功能
 
-官方提供了如下插件，可根据需求按需引入（某个功能不生效大概率是因为你没有引入对应的插件），具体使用方式请查看文档：
+- [x] **插件化架构**：除核心功能外，其他功能作为插件提供，按需使用，减小打包体积
+- [x] **多种布局结构**：逻辑结构图（向左、向右）、思维导图、组织结构图、目录组织图、时间轴（横向、竖向）、鱼骨图
+- [x] **主题系统**：内置多种主题，允许高度自定义样式，支持注册新主题
+- [x] **丰富节点内容**：支持文本（普通文本、富文本）、图片、图标、超链接、备注、标签、概要、数学公式
+- [x] **节点操作**：支持拖拽（拖拽移动、自由调整）、多种节点形状、扩展节点内容、使用 DDM 完全自定义节点内容
+- [x] **画布操作**：支持画布拖动、缩放
+- [x] **多选节点**：支持鼠标按键拖动选择和 Ctrl+左键两种多选节点方式
 
-| RichText（节点富文本插件）           | Select（鼠标多选节点插件）                | Drag（节点拖拽插件）                 | AssociativeLine（关联线插件）        |
-| ------------------------------------ | ----------------------------------------- | ------------------------------------ | ------------------------------------ |
-| Export（导出插件）                   | KeyboardNavigation（键盘导航插件）        | MiniMap（小地图插件）                | Watermark（水印插件）                |
-| TouchEvent（移动端触摸事件支持插件） | NodeImgAdjust（拖拽调整节点图片大小插件） | Search（搜索插件）                   | Painter（节点格式刷插件）            |
-| Scrollbar（滚动条插件）              | Formula（数学公式插件）                   | Cooperate（协同编辑插件）            | RainbowLines（彩虹线条插件）         |
-| Demonstrate（演示模式插件）          | OuterFrame（外框插件）                    | MindMapLayoutPro（思维导图布局插件） |                                      |
+## 导入导出
 
+- [x] 支持导出为 `json`、`png`、`svg`、`pdf`、`markdown`、`xmind`、`txt`
+- [x] 支持从 `json`、`xmind`、`markdown` 导入
+
+## 高级功能
+
+- [x] **快捷键**：丰富的键盘快捷键支持
+- [x] **前进后退**：历史记录管理
+- [x] **关联线**：节点之间的关联关系
+- [x] **搜索替换**：快速查找和替换内容
+- [x] **小地图**：导航预览
+- [x] **水印**：添加水印保护
+- [x] **滚动条**：画布滚动导航
+- [x] **手绘风格**：手绘风格渲染
+- [x] **彩虹线条**：彩色连接线
+- [x] **标记**：节点标记功能
+- [x] **外框**：节点外框
+- [x] **协同编辑**：基于 Yjs 的多人实时协同编辑
+- [x] **演示模式**：思维导图演示
+
+## AI 功能
+
+- [x] **多 AI 服务支持**：OpenAI、Anthropic Claude、火山引擎等
+- [x] **工具调用**：AI 可以直接操作思维导图（添加节点、删除节点、更新内容等）
+- [x] **会话历史**：保存和管理 AI 对话历史
+- [x] **全局规则**：支持自定义系统提示词
+- [x] **流式响应**：实时的 AI 回复体验
+
+## 官方插件
+
+| 插件名称 | 功能描述 |
+|---------|---------|
+| RichText | 节点富文本编辑（基于 Quill） |
+| Select | 鼠标框选多节点 |
+| Drag | 节点拖拽移动 |
+| AssociativeLine | 关联线 |
+| Export | 导出（PNG、SVG、PDF、JSON、Markdown、XMind） |
+| KeyboardNavigation | 键盘导航 |
+| MiniMap | 小地图 |
+| Watermark | 水印 |
+| TouchEvent | 移动端触摸事件支持 |
+| NodeImgAdjust | 拖拽调整节点图片大小 |
+| Search | 搜索替换 |
+| Painter | 节点格式刷 |
+| Scrollbar | 滚动条 |
+| Formula | 数学公式（基于 KaTeX） |
+| Cooperate | 协同编辑（基于 Yjs） |
+| RainbowLines | 彩虹线条 |
+| Demonstrate | 演示模式 |
+| OuterFrame | 外框 |
+| MindMapLayoutPro | 思维导图布局增强 |
+
+## 不支持的功能
 
 本项目不会实现的特性：
 
-> 1.自由节点，即多个根节点；
+> 1. 自由节点，即多个根节点
 >
-> 2.概要节点后面继续添加节点；
+> 2. 概要节点后面继续添加节点
 >
 > 如果你需要以上特性，那么本库可能无法满足你的需求。
 
-# 安装
+# 快速开始
+
+## 安装核心库
 
 ```bash
 npm i simple-mind-map
 ```
 
-# 使用
+## 基础使用
 
 提供一个宽高不为 0 的容器元素：
 
@@ -83,7 +146,7 @@ npm i simple-mind-map
 <div id="mindMapContainer"></div>
 ```
 
-另外再设置一下`css`样式：
+设置 CSS 样式：
 
 ```css
 #mindMapContainer * {
@@ -92,7 +155,7 @@ npm i simple-mind-map
 }
 ```
 
-然后创建一个实例：
+创建实例：
 
 ```js
 import MindMap from "simple-mind-map";
@@ -109,6 +172,84 @@ const mindMap = new MindMap({
 ```
 
 即可得到一个思维导图。想要实现更多功能？可以查看[开发文档](https://wanglin2.github.io/mind-map-docs/)。
+
+# 开发
+
+## 项目结构
+
+```
+mind-map/
+├── simple-mind-map/          # 核心库
+│   ├── src/
+│   │   ├── core/            # 核心模块
+│   │   ├── layouts/         # 布局系统
+│   │   ├── plugins/         # 插件系统
+│   │   ├── theme/           # 主题系统
+│   │   └── render/          # 渲染系统
+│   └── dist/                # 构建输出
+└── web/                      # Web 应用
+    ├── src/
+    │   ├── pages/Edit/      # 编辑页面
+    │   ├── utils/           # 工具类（含 AI 适配器）
+    │   ├── function_calling/# 工具调用系统
+    │   └── config/          # 配置文件
+    └── package.json
+```
+
+## 常用命令
+
+### 开发核心库
+```bash
+cd simple-mind-map
+npm run lint        # ESLint 检查
+npm run format      # Prettier 格式化
+npm run types       # 生成 TypeScript 类型定义
+npm run wsServe     # WebSocket 服务器
+```
+
+### 开发 Web 应用
+```bash
+cd web
+npm run serve       # 启动开发服务器
+npm run build       # 构建生产版本
+npm run lint        # ESLint 检查
+npm run format      # Prettier 格式化
+npm run ai:serve    # 启动 AI 聊天服务器
+```
+
+### 构建库
+```bash
+cd web
+npm run buildLibrary  # 构建核心库到 simple-mind-map/dist
+```
+
+## 技术栈
+
+### 核心库
+- 纯 JavaScript，无框架依赖
+- 插件化架构
+- 命令模式（Command Pattern）
+
+### Web 应用
+- Vue 2.x
+- ElementUI
+- Vue Router
+- Vuex
+- Axios
+
+## AI 功能架构
+
+### 适配器系统
+- `base.js`: 适配器基类
+- `openai.js`: OpenAI 兼容适配器（支持火山引擎等）
+- `anthropic.js`: Anthropic Claude 适配器
+
+### 工具调用
+- `add_node`: 添加子节点
+- `read_map`: 读取当前思维导图
+- `delete_node`: 删除节点
+- `update_node`: 更新节点内容
+- `overwrite_map`: 覆盖整个思维导图
 
 # License
 
