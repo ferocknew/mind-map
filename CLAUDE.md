@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **simple-mind-map**: 核心 JavaScript 思维导图库，不依赖任何框架
 - **web**: 基于 Vue2.x 和 ElementUI 的 Web 思维导图应用
 
+项目使用 pnpm 作为包管理器（pnpm-workspace.yaml）
+
 ## 常用命令
 
 ### 开发核心库 (simple-mind-map)
@@ -16,6 +18,7 @@ cd simple-mind-map
 npm run lint        # ESLint 检查
 npm run format      # Prettier 格式化
 npm run types       # 生成 TypeScript 类型定义
+npm run wsServe     # WebSocket 服务器（用于开发）
 ```
 
 ### 开发 Web 应用
@@ -25,12 +28,15 @@ npm run serve       # 启动开发服务器
 npm run build       # 构建生产版本
 npm run lint        # ESLint 检查
 npm run format      # Prettier 格式化
+npm run ai:serve    # 启动 AI 聊天服务器
+npm run createNodeImageList  # 生成节点图片列表
 ```
 
 ### 构建库
 ```bash
 cd web
 npm run buildLibrary  # 构建 simple-mind-map 库到 simple-mind-map/dist
+                      # 生成 UMD、ESM 格式
 ```
 
 ## 代码架构
@@ -92,8 +98,41 @@ npm run buildLibrary  # 构建 simple-mind-map 库到 simple-mind-map/dist
 
 Vue 2.x 单页应用，主要目录：
 - `src/pages/Edit/`: 编辑页面，包含主编辑器 (`Edit.vue`) 和各种侧边栏/对话框组件
-- `src/config/`: 多语言配置（中文、英文、越南语、繁体中文）
+- `src/config/`: 多语言配置（中文、英文、繁体中文）
 - `src/api/index.js`: 本地存储 API
+- `src/utils/`: 工具类，包含 AI 相关模块
+
+### AI 功能架构
+
+#### 1. AI 适配器系统 (`src/utils/ai_adapters/`)
+- **base.js**: 适配器基类，定义通用接口
+- **openai.js**: OpenAI 兼容适配器（支持火山引擎等 OpenAI 兼容服务）
+- **anthropic.js**: Anthropic Claude 适配器
+
+#### 2. AI 核心模块 (`src/utils/ai.js`)
+- `Ai` 类：统一的 AI 接口封装
+- 支持流式响应
+- 工具调用（Function Calling）支持
+- 自动处理多种 AI 服务的差异
+
+#### 3. 工具调用系统 (`src/function_calling/`)
+内置工具定义在 `tools/` 目录：
+- `add_node`: 添加子节点
+- `read_map`: 读取当前思维导图
+- `delete_node`: 删除节点
+- `update_node`: 更新节点内容
+- `overwrite_map`: 覆盖整个思维导图
+
+#### 4. AI 聊天界面
+- `ai_chat.vue`: AI 聊天主界面
+- `ai_chat_history.vue`: 会话历史管理
+- `AiConfigDialog.vue`: AI 配置对话框
+- `AiCreate.vue`: AI 创建节点功能
+
+#### 5. AI 配置存储
+- `src/utils/ai_chat_storage.js`: AI 配置持久化
+- 支持全局规则/系统提示词配置
+- 本地存储多种 AI 服务配置
 
 ### 数据流
 
@@ -119,17 +158,40 @@ Vue 2.x 单页应用，主要目录：
 
 ## 开发注意事项
 
-1. **插件开发**: 插件通过 `MindMap.usePlugin(PluginClass)` 注册，插件类的 `instanceName` 属性决定实例挂载到 `mindMap` 上的属性名
+### 命名规范
+1. **文件命名**: 使用小写字母和下划线分隔
+   - 正确: `ai_chat.vue`, `ai_config_dialog.vue`
+   - 错误: `AiChat.vue`, `AiConfig.vue`
+2. **组件注册**: 组件名使用 PascalCase
+   - 例如: `ai_chat` → `Ai_chat`（在 components 中注册）
 
-2. **布局开发**: 继承 `layouts/Base`，实现必要方法，在 `Render.js` 的 `layouts` 对象中注册
+### 代码修改原则
+1. **最小修改范围**: 只修改与任务直接相关的代码
+2. **保持原有逻辑**: 避免重构无关的业务逻辑
+3. **减少影响范围**: 保持代码风格一致
 
-3. **主题定制**: 使用 `setThemeConfig()` 修改主题配置，或用 `MindMap.defineTheme()` 定义新主题
+### 插件开发
+- 插件通过 `MindMap.usePlugin(PluginClass)` 注册
+- 插件类的 `instanceName` 属性决定实例挂载到 `mindMap` 上的属性名
 
-4. **节点复用**: 渲染时会复用已有节点实例（通过 `uid`），只有数据改变时才重新计算尺寸
+### 布局开发
+- 继承 `layouts/Base`
+- 实现必要方法
+- 在 `Render.js` 的 `layouts` 对象中注册
 
-5. **性能优化**: `openPerformance` 配置开启时，只渲染可见区域的节点
+### 主题定制
+- 使用 `setThemeConfig()` 修改主题配置
+- 或用 `MindMap.defineTheme()` 定义新主题
 
-6. **协同编辑**: 基于 Yjs 的 CRDT 实现，支持多人实时编辑
+### 节点复用
+- 渲染时会复用已有节点实例（通过 `uid`）
+- 只有数据改变时才重新计算尺寸
+
+### 性能优化
+- `openPerformance` 配置开启时，只渲染可见区域的节点
+
+### 协同编辑
+- 基于 Yjs 的 CRDT 实现，支持多人实时编辑
 
 ## 不支持的功能
 
@@ -140,3 +202,7 @@ Vue 2.x 单页应用，主要目录：
 
 - **导入**: JSON、XMind、Markdown
 - **导出**: JSON、PNG、SVG、PDF、Markdown、XMind、TXT
+
+## 部署
+
+项目支持 Docker 部署，参考项目根目录的 `Dockerfile`
