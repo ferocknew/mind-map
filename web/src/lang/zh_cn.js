@@ -555,7 +555,25 @@ export default {
     save: '保存',
     required: '此项必填',
     serverVerifiedTip: '已验证，可以使用服务端配置',
-    tip: '提示'
+    tip: '提示',
+    // 历史记录
+    historyRecords: '历史记录',
+    newChat: '新对话',
+    historyDesc: '查看与恢复之前的生成记录',
+    clearAll: '清空全部',
+    localHistoryTip: '所有历史记录均加密存储在您的本地浏览器中，不会上传至服务器。',
+    noHistory: '暂无历史记录',
+    chat: '对话',
+    restore: '恢复',
+    delete: '删除',
+    confirmDeleteHistory: '确定要删除这条历史记录吗？',
+    confirmClearAllHistory: '确定要清空所有历史记录吗？',
+    prompt: '提示',
+    defaultTitle: '未命名对话',
+    // 全局规则
+    globalRules: '全局规则',
+    globalRulesDesc: '设置 AI 的全局行为规则或人设 (System Prompt)',
+    globalRulesPlaceholder: '例如：你是一个思维导图专家，请用简洁的语言回答...'
   },
   note: {
     title: '备注'

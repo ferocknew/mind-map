@@ -266,13 +266,17 @@ export default {
       this.aiInstance.request(
         {
           messages: [
-            {
-              role: 'user',
-              content: `${this.$t(
-                'ai.aiCreateMsgPrefix'
-              )}${aiInputText}${this.$t('ai.aiCreateMsgPostfix')}`
-            }
-          ]
+              ...(this.aiConfig.aiSystemPrompt ? [{
+                  role: 'system',
+                  content: this.aiConfig.aiSystemPrompt
+              }] : []),
+              {
+                role: 'user',
+                content: `${this.$t(
+                  'ai.aiCreateMsgPrefix'
+                )}${aiInputText}${this.$t('ai.aiCreateMsgPostfix')}`
+              }
+            ]
         },
         content => {
           if (content) {
@@ -575,12 +579,17 @@ export default {
         this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
-            messages: messageList.map(msg => {
+            messages: [
+              ...(this.aiConfig.aiSystemPrompt ? [{
+                  role: 'system',
+                  content: this.aiConfig.aiSystemPrompt
+              }] : []),
+              ...messageList.map(msg => {
               return {
                 role: 'user',
                 content: msg
               }
-            })
+            })]
           },
           content => {
             progress(content)

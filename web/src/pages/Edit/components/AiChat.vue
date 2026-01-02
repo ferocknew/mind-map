@@ -2,14 +2,26 @@
   <Sidebar ref="sidebar" :title="$t('ai.chatTitle')">
     <div class="aiChatBox" :class="{ isDark: isDark }">
       <div class="chatHeader">
-        <el-button size="mini" @click="clear">
-          <span class="el-icon-delete"></span>
-          {{ $t('ai.clearRecords') }}
-        </el-button>
-        <el-button size="mini" @click="modifyAiConfig">
-          <span class="el-icon-edit"></span>
-          {{ $t('ai.modifyAIConfiguration') }}
-        </el-button>
+        <div class="left-btn-group">
+           <el-tooltip :content="$t('ai.newChat')" placement="bottom">
+             <el-button size="mini" circle @click="startNewChat">
+               <i class="el-icon-plus"></i>
+             </el-button>
+           </el-tooltip>
+        </div>
+        
+        <div class="right-btn-group">
+            <el-tooltip :content="$t('ai.historyRecords')" placement="bottom">
+              <el-button size="mini" circle @click="showHistory">
+                <i class="el-icon-time"></i>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('ai.modifyAIConfiguration')" placement="bottom">
+               <el-button size="mini" circle @click="modifyAiConfig">
+                 <i class="el-icon-setting"></i>
+               </el-button>
+            </el-tooltip>
+        </div>
       </div>
       <div class="chatResBox customScrollbar" ref="chatResBoxRef">
         <div
@@ -54,6 +66,8 @@
         </el-button>
       </div>
     </div>
+    
+    <AiChatHistory @restore="restoreSession"></AiChatHistory>
   </Sidebar>
 </template>
 
@@ -62,18 +76,23 @@ import Sidebar from './Sidebar.vue'
 import { mapState } from 'vuex'
 import { createUid } from 'simple-mind-map/src/utils'
 import MarkdownIt from 'markdown-it'
+import { saveSession, createNewSessionId } from '@/utils/ai_chat_storage'
+import AiChatHistory from './ai_chat_history.vue'
+import { throttle } from '@/utils'
 
 let md = null
 
 export default {
   components: {
-    Sidebar
+    Sidebar,
+    AiChatHistory
   },
   data() {
     return {
       text: '',
       chatList: [],
-      isCreating: false
+      isCreating: false,
+      currentSessionId: null
     }
   },
   computed: {
@@ -86,9 +105,21 @@ export default {
     activeSidebar(val) {
       if (val === 'ai') {
         this.$refs.sidebar.show = true
+        // Initialize session if empty
+        if (!this.currentSessionId) {
+            this.startNewChat()
+        }
       } else {
         this.$refs.sidebar.show = false
       }
+    },
+    chatList: {
+        deep: true,
+        handler: throttle(function(val) {
+            if (val.length > 0 && this.currentSessionId) {
+                saveSession(this.currentSessionId, val)
+            }
+        }, 1000)
     }
   },
   created() {},
@@ -111,6 +142,12 @@ export default {
         return
       }
       this.text = ''
+      
+      // If no session, create one
+      if (!this.currentSessionId) {
+          this.currentSessionId = createNewSessionId()
+      }
+
       const historyUserMsgList = this.chatList
         .filter(item => {
           return item.type === 'user'
@@ -142,6 +179,10 @@ export default {
         },
         () => {
           this.isCreating = false
+          // Save session on completion
+          if(this.currentSessionId) {
+              saveSession(this.currentSessionId, this.chatList)
+          }
         },
         () => {
           this.isCreating = false
@@ -156,7 +197,29 @@ export default {
     },
 
     clear() {
-      this.chatList = []
+      // Deprecated, use startNewChat instead
+      this.startNewChat()
+    },
+    
+    startNewChat() {
+       this.chatList = []
+       this.currentSessionId = createNewSessionId()
+       this.text = ''
+       this.isCreating = false
+    },
+    
+    showHistory() {
+        this.$bus.$emit('show_ai_history')
+    },
+    
+    restoreSession(session) {
+        this.currentSessionId = session.id
+        this.chatList = session.list || []
+         this.$nextTick(() => {
+            if(this.$refs.chatResBoxRef){
+                this.$refs.chatResBoxRef.scrollTop = this.$refs.chatResBoxRef.scrollHeight
+            }
+        })
     },
 
     modifyAiConfig() {
@@ -182,7 +245,20 @@ export default {
     border-bottom: 1px solid #e8e8e8;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 12px;
+    
+    .left-btn-group, .right-btn-group {
+        display: flex;
+        align-items: center;
+        
+        /deep/ .el-button {
+             margin-left: 10px;
+             &:first-child {
+                 margin-left: 0;
+             }
+         }
+    }
   }
 
   .chatResBox {

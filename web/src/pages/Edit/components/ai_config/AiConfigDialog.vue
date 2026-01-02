@@ -53,6 +53,13 @@
         >
           <i class="el-icon-files"></i> {{ $t('ai.accessPassword') }}
         </div>
+        <div
+          class="tab-item"
+          :class="{ active: activeTab === 'rules' }"
+          @click="switchToTab('rules')"
+        >
+          <i class="el-icon-cpu"></i> {{ $t('ai.globalRules') }}
+        </div>
       </div>
 
       <!-- 内容区域 -->
@@ -68,7 +75,7 @@
         </div>
 
         <!-- 访问密码内容 -->
-        <div v-else class="server-content">
+        <div v-else-if="activeTab === 'server'" class="server-content">
           <p class="desc">{{ $t('ai.serverConfigDesc') }}</p>
           <div class="password-input-container">
             <el-input
@@ -86,6 +93,18 @@
             <i class="el-icon-success"></i> {{ $t('ai.serverVerifiedTip') }}
           </p>
         </div>
+
+        <!-- 全局规则内容 -->
+         <div v-else-if="activeTab === 'rules'" class="rules-content">
+             <p class="desc">{{ $t('ai.globalRulesDesc') }}</p>
+             <el-input
+                 type="textarea"
+                 :rows="5"
+                 :placeholder="$t('ai.globalRulesPlaceholder')"
+                 v-model="aiSystemPrompt"
+                 resize="none"
+             ></el-input>
+         </div>
       </div>
     </div>
 
@@ -131,7 +150,8 @@ export default {
       accessPassword: '',
       serverVerified: false,
       saving: false,
-      localManagerVisible: false
+      localManagerVisible: false,
+      aiSystemPrompt: ''
     }
   },
   computed: {
@@ -152,6 +172,7 @@ export default {
         } else {
             this.accessPassword = ''
         }
+        this.aiSystemPrompt = this.aiConfig.aiSystemPrompt || ''
       }
     },
     dialogVisible(val) {
@@ -196,7 +217,8 @@ export default {
       // 保存设置
       const newConfig = {
         ...this.aiConfig,
-        mode: this.activeTab
+        mode: this.activeTab === 'rules' ? this.aiConfig.mode : this.activeTab,
+        aiSystemPrompt: this.aiSystemPrompt
       }
       
       if (this.activeTab === 'server') {

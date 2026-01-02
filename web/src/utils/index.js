@@ -78,7 +78,7 @@ export const printOutline = el => {
   iframeDoc.write('<style media="print">@page {size: portrait;}</style>')
   // 写入内容
   iframeDoc.write('<div>' + printContent + '</div>')
-  setTimeout(function() {
+  setTimeout(function () {
     iframe.contentWindow?.print()
     document.body.removeChild(iframe)
   }, 500)
@@ -92,4 +92,18 @@ export const getParentWithClass = (el, className) => {
     return getParentWithClass(el.parentNode, className)
   }
   return null
+}
+
+// 节流
+export const throttle = (func, wait) => {
+  let previous = 0
+  return function () {
+    let now = Date.now()
+    let context = this
+    let args = arguments
+    if (now - previous > wait) {
+      func.apply(context, args)
+      previous = now
+    }
+  }
 }

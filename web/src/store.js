@@ -37,7 +37,8 @@ const store = new Vuex.Store({
       key: '',
       model: '',
       port: 3456,
-      method: 'POST'
+      method: 'POST',
+      aiSystemPrompt: ''
     },
     // 扩展主题列表
     extendThemeGroupList: [],
@@ -58,14 +59,14 @@ const store = new Vuex.Store({
           ...data.aiConfig
         }
       }
-      
+
       const localConfigKeys = Object.keys(state.localConfig)
       Object.keys(data).forEach(key => {
         if (localConfigKeys.includes(key)) {
           state.localConfig[key] = data[key]
         }
       })
-      
+
       storeLocalConfig({
         ...state.localConfig,
         aiConfig: state.aiConfig
