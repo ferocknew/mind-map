@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # 思维导图项目运行脚本
 
@@ -33,7 +33,7 @@ check_package_manager() {
 }
 
 # 获取项目根目录
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 WEB_DIR="$PROJECT_ROOT/web"
 CORE_DIR="$PROJECT_ROOT/simple-mind-map"
 
