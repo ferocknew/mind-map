@@ -38,7 +38,10 @@ const store = new Vuex.Store({
       model: '',
       port: 3456,
       method: 'POST',
-      aiSystemPrompt: ''
+      aiSystemPrompt: '',
+      // 搜索引擎配置
+      searchEngine: 'searxng', // 'searxng' | 'whoogle'
+      searchUrl: ''
     },
     // 扩展主题列表
     extendThemeGroupList: [],

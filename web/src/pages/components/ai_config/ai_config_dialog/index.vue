@@ -61,6 +61,13 @@
         >
           <i class="el-icon-cpu"></i> {{ $t('ai.globalRules') }}
         </div>
+        <div
+          class="tab-item"
+          :class="{ active: activeTab === 'search' }"
+          @click="switchToTab('search')"
+        >
+          <i class="el-icon-search"></i> {{ $t('ai.searchConfig') }}
+        </div>
       </div>
 
       <!-- 内容区域 -->
@@ -106,6 +113,27 @@
                  resize="none"
              ></el-input>
          </div>
+
+        <!-- 搜索配置内容 -->
+        <div v-else-if="activeTab === 'search'" class="search-content">
+            <p class="desc">{{ $t('ai.searchConfigDesc') }}</p>
+            <div class="search-form">
+                <div class="form-item">
+                    <label>{{ $t('ai.searchEngine') }}</label>
+                    <el-select v-model="searchEngine" :placeholder="$t('ai.searchEngine')">
+                        <el-option value="searxng" :label="$t('ai.searxng')"></el-option>
+                        <el-option value="whoogle" :label="$t('ai.whoogle')"></el-option>
+                    </el-select>
+                </div>
+                <div class="form-item">
+                    <label>{{ $t('ai.searchUrl') }}</label>
+                    <el-input
+                        v-model="searchUrl"
+                        :placeholder="searchEngine === 'searxng' ? $t('ai.searxngUrlTip') : $t('ai.whoogleUrlTip')"
+                    ></el-input>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
 

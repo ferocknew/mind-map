@@ -20,7 +20,9 @@ export const aiConfigDialogMixin = {
       serverVerified: false,
       saving: false,
       localManagerVisible: false,
-      aiSystemPrompt: ''
+      aiSystemPrompt: '',
+      searchEngine: 'searxng',
+      searchUrl: ''
     }
   },
   computed: {
@@ -46,6 +48,9 @@ export const aiConfigDialogMixin = {
         }
         // 如果 aiSystemPrompt 为空，则使用默认规则
         this.aiSystemPrompt = this.aiConfig.aiSystemPrompt || DEFAULT_AI_RULES
+        // 初始化搜索配置
+        this.searchEngine = this.aiConfig.searchEngine || 'searxng'
+        this.searchUrl = this.aiConfig.searchUrl || ''
       }
     },
     dialogVisible(val) {
@@ -90,8 +95,10 @@ export const aiConfigDialogMixin = {
       // 保存设置
       const newConfig = {
         ...this.aiConfig,
-        mode: this.activeTab === 'rules' ? this.aiConfig.mode : this.activeTab,
-        aiSystemPrompt: this.aiSystemPrompt
+        mode: this.activeTab === 'rules' || this.activeTab === 'search' ? this.aiConfig.mode : this.activeTab,
+        aiSystemPrompt: this.aiSystemPrompt,
+        searchEngine: this.searchEngine,
+        searchUrl: this.searchUrl
       }
 
       if (this.activeTab === 'server') {

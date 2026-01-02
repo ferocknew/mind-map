@@ -574,6 +574,16 @@ export default {
     globalRules: '全局规则',
     globalRulesDesc: '设置 AI 的全局行为规则或人设 (System Prompt)',
     globalRulesPlaceholder: '例如：你是一个思维导图专家，请用简洁的语言回答...',
+    // 搜索引擎配置
+    searchConfig: '搜索配置',
+    searchConfigDesc: '配置 AI 使用的搜索引擎服务',
+    searchEngine: '搜索引擎',
+    searchUrl: '搜索服务地址',
+    searchUrlPlaceholder: '请输入搜索服务地址',
+    searxng: 'SearXNG',
+    whoogle: 'Whoogle',
+    searxngUrlTip: 'SearXNG 服务地址，如：https://searxng.example.com',
+    whoogleUrlTip: 'Whoogle 服务地址，如：https://whoogle.example.com',
     // 新增
     newChat: '新建对话',
     historyRecords: '历史记录',
