@@ -40,6 +40,8 @@ export const chatMixin = {
         }
       } else {
         this.$refs.sidebar.show = false
+        // Reset sidebar width when closing
+        this.sidebarWidth = this.defaultWidth
       }
     },
     chatList: {
