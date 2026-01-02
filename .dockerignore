@@ -1,0 +1,57 @@
+# 依赖目录
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 构建输出
+web/dist/
+simple-mind-map/dist/
+simple-mind-map/types/
+
+# 编辑器和 IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# 文档
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+
+# 测试
+coverage/
+.nyc_output/
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 日志文件
+logs/
+*.log
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# Docker 文件
+Dockerfile*
+docker-compose*.yaml
+.dockerignore
+
+# 其他
+.env
+.env.*
+!.env.example
