@@ -48,21 +48,10 @@ module.exports = {
     disableHostCheck: true,
     // 支持 nginx 反向代理：告诉客户端应该通过哪个地址访问 dev server
     public: devServerPublic || undefined,
-    // WebSocket 连接配置
+    // WebSocket 连接配置 (webpack-dev-server v3 兼容)
     sockHost: devServerPublic ? new URL(devServerPublic).hostname : undefined,
     sockPath: '/sockjs-node',
     sockPort: devServerPublic ? new URL(devServerPublic).port : undefined,
-    client: {
-      // 客户端连接配置
-      webSocketURL: devServerPublic
-        ? {
-            protocol: 'wss:',
-            hostname: new URL(devServerPublic).hostname,
-            port: new URL(devServerPublic).port,
-            pathname: '/sockjs-node'
-          }
-        : undefined
-    },
     watchOptions: {
       ignored: /node_modules/,
       aggregateTimeout: 300,
