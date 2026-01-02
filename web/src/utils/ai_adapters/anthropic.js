@@ -207,6 +207,11 @@ class AnthropicAdapter extends BaseAdapter {
         let remainingChunk = ''
         let toolCalls = []
 
+        // 调试日志
+        if (chunk.length > 0) {
+            console.log('[Anthropic] 接收到数据块，长度:', chunk.length, '前100字符:', chunk.substring(0, 100))
+        }
+
         if (chunk.includes('message_stop')) {
             isEnd = true
         }
@@ -263,20 +268,24 @@ class AnthropicAdapter extends BaseAdapter {
                             type: 'tool_use_start',
                             id: data.content_block.id,
                             name: data.content_block.name,
-                            index: data.index
+                            index: data.index,
+                            input: data.content_block.input || {}
                         })
+                        console.log('[Anthropic] 检测到工具调用开始:', data.content_block.name)
                     }
 
                     if (data.type === 'content_block_delta' && data.delta && data.delta.type === 'input_json_delta') {
+                        // partial_json 是不完整的 JSON，需要累积，这里先保存原始字符串
                         toolCalls.push({
                             type: 'tool_use_delta',
                             partial_json: data.delta.partial_json,
                             index: data.index
                         })
+                        console.log('[Anthropic] 工具参数片段:', data.delta.partial_json)
                     }
 
                 } catch (e) {
-                    console.warn('解析 Anthropic 响应失败:', e)
+                    console.warn('解析 Anthropic 响应失败:', e, '原始数据:', jsonStr)
                 }
             }
         }

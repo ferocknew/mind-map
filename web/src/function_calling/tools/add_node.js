@@ -3,6 +3,8 @@
  * 描述：在当前选中的节点下添加一个子节点。如果没有选中节点，则添加到根节点。
  */
 
+import { createUid } from 'simple-mind-map/src/utils'
+
 export default {
     // 工具定义 (JSON Schema)
     definition: {
@@ -56,24 +58,47 @@ export default {
                 return result
             }
 
-            // 2. 执行添加节点的操作
-            // 注意：simple-mind-map 通常使用 commands 或直接操作 data
-            // 这里我们使用 execCommand 以支持撤销/重做
-            mindMap.execCommand('INSERT_NODE', false, [], {
-                text: text
-            }, parentNode)
+            // 2. 记录添加前的子节点数量
+            const beforeChildCount = parentNode.children ? parentNode.children.length : 0
+            console.log('[Tool: add_node] 添加前子节点数:', beforeChildCount)
 
-            // 等待一下，然后检查节点是否真的被添加了
-            await new Promise(resolve => setTimeout(resolve, 100))
+            // 3. 执行添加节点的操作 - 使用 INSERT_CHILD_NODE
+            // 参考官方文档：INSERT_CHILD_NODE 在指定节点下插入子节点
+            const newUid = createUid()
+            mindMap.execCommand('INSERT_CHILD_NODE', false, [parentNode], {
+                uid: newUid,
+                text: text,
+                richText: true
+            })
 
-            const newChildren = parentNode.children?.map(c => ({ uid: c.uid, text: c.text })) || []
-            const addedNode = newChildren.length > 0 ? newChildren[newChildren.length - 1] : null
+            // 4. 等待渲染完成
+            await new Promise(resolve => setTimeout(resolve, 200))
+
+            // 5. 验证节点是否真的被添加
+            // 需要重新获取父节点引用，因为可能已经重新渲染
+            const updatedParentNode = mindMap.renderer.findNodeByUid(parentNode.uid)
+            const afterChildCount = updatedParentNode.children ? updatedParentNode.children.length : 0
+            console.log('[Tool: add_node] 添加后子节点数:', afterChildCount)
+
+            // 查找新添加的节点
+            let addedNode = null
+            if (afterChildCount > beforeChildCount) {
+                // 如果子节点增加了，找到新添加的节点
+                addedNode = updatedParentNode.children[afterChildCount - 1]
+                console.log('[Tool: add_node] 找到新节点:', { uid: addedNode.uid, text: addedNode.getData('text') })
+            } else {
+                // 如果数量没增加，尝试通过 UID 查找
+                addedNode = mindMap.renderer.findNodeByUid(newUid)
+                if (addedNode) {
+                    console.log('[Tool: add_node] 通过 UID 找到新节点:', { uid: addedNode.uid, text: addedNode.getData('text') })
+                }
+            }
 
             const result = {
                 success: true,
                 message: `成功添加节点: "${text}"`,
-                nodeId: addedNode?.uid || 'unknown',
-                nodeText: addedNode?.text || text,
+                nodeId: addedNode ? addedNode.uid : newUid,
+                nodeText: text,
                 parentUid: parentNode.uid
             }
             console.log('[Tool: add_node] 出参:', result)
@@ -84,6 +109,7 @@ export default {
                 message: `执行失败: ${e.message}`
             }
             console.log('[Tool: add_node] 出参:', result)
+            console.error('[Tool: add_node] 错误详情:', e)
             return result
         }
     }
