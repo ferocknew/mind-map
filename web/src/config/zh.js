@@ -537,11 +537,11 @@ export const sidebarTriggerList = [
     value: 'outline',
     icon: 'iconfuhao-dagangshu'
   },
-  // {
-  //   name: 'AI',
-  //   value: 'ai',
-  //   icon: 'iconAIshengcheng'
-  // },
+  {
+    name: 'AI',
+    value: 'ai',
+    icon: 'iconAIshengcheng'
+  },
   {
     name: '设置',
     value: 'setting',
