@@ -92,17 +92,26 @@ export default {
     }
   },
   watch: {
-    visible(val) {
-      if (val) {
-        if (this.editData) {
-          this.form = { ...this.editData }
-        } else {
-          this.resetForm()
+    visible: {
+      handler(val) {
+        if (val) {
+          if (this.editData) {
+            this.form = { ...this.editData }
+          } else {
+            this.resetForm()
+          }
+          this.$nextTick(() => {
+            this.$refs.form && this.$refs.form.clearValidate()
+          })
         }
-        this.$nextTick(() => {
-            this.$refs.form.clearValidate()
-        })
-      }
+      },
+      immediate: true
+    }
+  },
+  created() {
+    // 组件创建时，如果有编辑数据则填充表单
+    if (this.editData) {
+      this.form = { ...this.editData }
     }
   },
   methods: {
