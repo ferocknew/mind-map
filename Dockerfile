@@ -18,5 +18,5 @@ COPY . /app/
 
 EXPOSE 8080
 
-# 启动应用
-CMD ["pnpm", "--filter", "thoughts", "run", "serve"]
+# 启动应用，监听 0.0.0.0 以允许外部访问
+CMD ["pnpm", "--filter", "thoughts", "run", "serve", "--", "--host", "0.0.0.0"]
