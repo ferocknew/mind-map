@@ -6,7 +6,9 @@ const STORAGE_KEY = 'MIND_MAP_AI_CHAT_SESSIONS'
 export const getSessions = () => {
     try {
         const data = localStorage.getItem(STORAGE_KEY)
-        return data ? JSON.parse(data) : []
+        const sessions = data ? JSON.parse(data) : []
+        // 按 updatedAt 降序排序，最后更新的排在最前面
+        return sessions.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
     } catch (e) {
         console.error('Failed to parse chat sessions', e)
         return []

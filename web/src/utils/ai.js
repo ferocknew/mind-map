@@ -137,6 +137,7 @@ class Ai {
    */
   async processToolCalls(historyMessages, progress, end, err) {
     const toolCalls = Object.values(this.toolCallsCache)
+
     if (toolCalls.length === 0) {
       end(this.content)
       return
@@ -166,7 +167,6 @@ class Ai {
       if (handler && this.mindMap) {
         try {
           const args = JSON.parse(tool.arguments)
-          // Notice: We pass mindMap instance to the handler
           const result = await handler(args, { mindMap: this.mindMap })
           resultContent = JSON.stringify(result)
         } catch (e) {

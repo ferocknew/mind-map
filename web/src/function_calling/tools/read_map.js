@@ -39,18 +39,24 @@ export default {
     },
 
     handler: async (args, { mindMap }) => {
+        console.log('[Tool: read_map] 入参:', args)
+
         try {
             const data = mindMap.getData()
             const simpleData = filterData(data)
-            return {
+            const result = {
                 success: true,
                 data: simpleData
             }
+            console.log('[Tool: read_map] 出参 (data 已精简):', { success: result.success, nodeCount: JSON.stringify(result.data).length })
+            return result
         } catch (e) {
-            return {
+            const result = {
                 success: false,
                 message: `读取失败: ${e.message}`
             }
+            console.log('[Tool: read_map] 出参:', result)
+            return result
         }
     }
 }

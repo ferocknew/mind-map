@@ -23,13 +23,17 @@ export default {
     },
 
     handler: async ({ data }, { mindMap }) => {
+        console.log('[Tool: overwrite_map] 入参 (data 已精简):', { hasData: !!data })
+
         try {
             // 简单校验数据结构
             if (!data || (!data.root && !data.data)) {
-                return {
+                const result = {
                     success: false,
                     message: '数据格式无效，必须包含 root 节点信息'
                 }
+                console.log('[Tool: overwrite_map] 出参:', result)
+                return result
             }
 
             // 如果数据是精简格式（只有 children/text），可能需要适配一下
@@ -43,15 +47,19 @@ export default {
             mindMap.setData(rootData)
             mindMap.view.reset() // 重置视图位置
 
-            return {
+            const result = {
                 success: true,
                 message: '思维导图已重置'
             }
+            console.log('[Tool: overwrite_map] 出参:', result)
+            return result
         } catch (e) {
-            return {
+            const result = {
                 success: false,
                 message: `覆盖失败: ${e.message}`
             }
+            console.log('[Tool: overwrite_map] 出参:', result)
+            return result
         }
     }
 }

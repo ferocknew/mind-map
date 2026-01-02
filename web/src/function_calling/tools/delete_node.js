@@ -23,35 +23,45 @@ export default {
     },
 
     handler: async ({ uid }, { mindMap }) => {
+        console.log('[Tool: delete_node] 入参:', { uid })
+
         try {
             const node = mindMap.renderer.findNodeByUid(uid)
             if (!node) {
-                return {
+                const result = {
                     success: false,
                     message: `未找到 UID 为 ${uid} 的节点`
                 }
+                console.log('[Tool: delete_node] 出参:', result)
+                return result
             }
 
             // 如果是根节点，通常不允许完全删除，或者只能清空内容
             if (node.isRoot) {
-                return {
+                const result = {
                     success: false,
                     message: '不能删除根节点'
                 }
+                console.log('[Tool: delete_node] 出参:', result)
+                return result
             }
 
             // 执行删除
             mindMap.execCommand('REMOVE_NODE', [node])
 
-            return {
+            const result = {
                 success: true,
                 message: `成功删除节点: ${uid}`
             }
+            console.log('[Tool: delete_node] 出参:', result)
+            return result
         } catch (e) {
-            return {
+            const result = {
                 success: false,
                 message: `删除失败: ${e.message}`
             }
+            console.log('[Tool: delete_node] 出参:', result)
+            return result
         }
     }
 }

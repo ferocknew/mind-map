@@ -27,13 +27,17 @@ export default {
     },
 
     handler: async ({ uid, text }, { mindMap }) => {
+        console.log('[Tool: update_node] 入参:', { uid, text })
+
         try {
             const node = mindMap.renderer.findNodeByUid(uid)
             if (!node) {
-                return {
+                const result = {
                     success: false,
                     message: `未找到 UID 为 ${uid} 的节点`
                 }
+                console.log('[Tool: update_node] 出参:', result)
+                return result
             }
 
             // 执行更新
@@ -41,22 +45,26 @@ export default {
             // 也可以使用通用的 UPDATE_NODE 如果支持
             // 这里假设使用 setText 或者更新 data
 
-            // mindMap.execCommand('SET_NODE_TEXT', node, text) 
+            // mindMap.execCommand('SET_NODE_TEXT', node, text)
             // 直接修改数据可能会绕过历史栈，最好用 execCommand
 
-            // 检查命令: 
+            // 检查命令:
             // simple-mind-map 常用命令: SET_NODE_TEXT
             mindMap.execCommand('SET_NODE_TEXT', node, text)
 
-            return {
+            const result = {
                 success: true,
                 message: `成功更新节点 ${uid} 的文本为: "${text}"`
             }
+            console.log('[Tool: update_node] 出参:', result)
+            return result
         } catch (e) {
-            return {
+            const result = {
                 success: false,
                 message: `更新失败: ${e.message}`
             }
+            console.log('[Tool: update_node] 出参:', result)
+            return result
         }
     }
 }

@@ -29,6 +29,8 @@ export default {
 
     // 执行函数
     handler: async ({ text, parentUid }, { mindMap }) => {
+        console.log('[Tool: add_node] 入参:', { text, parentUid })
+
         try {
             // 1. 确定父节点
             let parentNode = null
@@ -46,30 +48,43 @@ export default {
             }
 
             if (!parentNode) {
-                return {
+                const result = {
                     success: false,
                     message: '未找到父节点 (Parent node not found)'
                 }
+                console.log('[Tool: add_node] 出参:', result)
+                return result
             }
 
-            // 2. 执行添加添加节点的操作
+            // 2. 执行添加节点的操作
             // 注意：simple-mind-map 通常使用 commands 或直接操作 data
             // 这里我们使用 execCommand 以支持撤销/重做
             mindMap.execCommand('INSERT_NODE', false, [], {
                 text: text
             }, parentNode)
 
-            return {
+            // 等待一下，然后检查节点是否真的被添加了
+            await new Promise(resolve => setTimeout(resolve, 100))
+
+            const newChildren = parentNode.children?.map(c => ({ uid: c.uid, text: c.text })) || []
+            const addedNode = newChildren.length > 0 ? newChildren[newChildren.length - 1] : null
+
+            const result = {
                 success: true,
                 message: `成功添加节点: "${text}"`,
-                nodeId: parentNode.children ? parentNode.children[parentNode.children.length - 1].uid : 'unknown'
+                nodeId: addedNode?.uid || 'unknown',
+                nodeText: addedNode?.text || text,
+                parentUid: parentNode.uid
             }
+            console.log('[Tool: add_node] 出参:', result)
+            return result
         } catch (e) {
-            console.error('add_node 执行失败:', e)
-            return {
+            const result = {
                 success: false,
                 message: `执行失败: ${e.message}`
             }
+            console.log('[Tool: add_node] 出参:', result)
+            return result
         }
     }
 }
