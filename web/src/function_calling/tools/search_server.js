@@ -28,26 +28,30 @@ export default {
 
         try {
             // 从 localStorage 读取配置
-            // 注意：localStorage 存储的是字符串，Vuex 持久化可能存储为 JSON 字符串，也可能直接存值
-            // 这里参考 ai_config_dialog 的逻辑，实际上配置通常保存在 localStorage 的 'MINIMAP_AI_CONFIG' 或类似 key 中
-            // 但根据 ai_config_dialog/index.js，数据在 vuex 的 aiConfig 中
-            // 我们在非组件环境中，可以直接读取 localStorage
-            // 假设 vuex-persistedstate 将 'aiConfig' 存放在 'vuex' key 下，或者直接存放在 'aiConfig' key 下
-            // 基于 mind-map 项目常见结构，通常是 store.js 配置了持久化
-            // 简单起见，我们尝试从 localStorage 中的 store 状态读取，或者假设 config 被同步到了 localStorage 的某个特定 key
-            // 观察 ai_config_dialog.js，它用了 mapMutations(['setAiConfig'])，这暗示用了 vuex。
-
-            // 为了稳健性，先尝试读取 vuex 持久化数据
+            // 项目使用 storeLocalConfig 将配置保存到 SIMPLE_MIND_MAP_LOCAL_CONFIG 键中
             let aiConfig = {}
             try {
-                const vuexState = JSON.parse(localStorage.getItem('vuex') || '{}')
-                aiConfig = vuexState.aiConfig || {}
-            } catch (e) {
-                console.warn('[Tool: search_server] 读取 Vuex state 失败:', e)
-            }
+                // 尝试从项目标准的本地配置读取
+                const localConfigStr = localStorage.getItem('SIMPLE_MIND_MAP_LOCAL_CONFIG')
+                if (localConfigStr) {
+                    const localConfig = JSON.parse(localConfigStr)
+                    aiConfig = localConfig.aiConfig || {}
 
-            // 如果没找到，尝试读取旧的或备用的存储位（如果有）
-            // 这里假设主要配置就在 vuex.aiConfig
+                    // 输出详细配置信息（脱敏）
+                    console.log('[Tool: search_server] ========== 搜索配置信息 ==========')
+                    console.log('[Tool: search_server] 配置来源: SIMPLE_MIND_MAP_LOCAL_CONFIG')
+                    console.log('[Tool: search_server] 搜索引擎:', aiConfig.searchEngine || '未配置')
+                    console.log('[Tool: search_server] 搜索地址:', aiConfig.searchUrl || '未配置')
+                    console.log('[Tool: search_server] 是否启用认证:', aiConfig.searchIsAuth || false)
+                    console.log('[Tool: search_server] 认证码:', aiConfig.searchAuthCode ? '已配置(长度:' + aiConfig.searchAuthCode.length + ')' : '未配置')
+                    console.log('[Tool: search_server] 完整 aiConfig 对象:', JSON.stringify(aiConfig, null, 2))
+                    console.log('[Tool: search_server] ======================================')
+                } else {
+                    console.warn('[Tool: search_server] 未找到 SIMPLE_MIND_MAP_LOCAL_CONFIG 配置')
+                }
+            } catch (e) {
+                console.error('[Tool: search_server] 读取本地配置失败:', e)
+            }
 
             const searchEngine = aiConfig.searchEngine || 'searxng'
             const searchUrl = aiConfig.searchUrl
@@ -55,32 +59,52 @@ export default {
             const searchAuthCode = aiConfig.searchAuthCode || ''
 
             if (!searchUrl) {
+                console.error('[Tool: search_server] 搜索服务地址未配置')
                 return {
                     success: false,
                     message: '未配置搜索服务地址，请在 AI 设置 -> 搜索配置 中填写服务地址。'
                 }
             }
 
-            const headers = {}
-            if (searchIsAuth && searchAuthCode) {
-                headers['Authorization'] = `Bearer ${searchAuthCode}`
-            }
-
             if (searchEngine === 'searxng') {
-                const url = `${searchUrl}/search?q=${encodeURIComponent(keyword)}&categories=general&language=auto&time_range=&safesearch=0&theme=simple&format=json`
+                // 修复 URL 双斜杠问题：移除 searchUrl 末尾的斜杠
+                const cleanSearchUrl = searchUrl.replace(/\/$/, '')
+                const targetUrl = `${cleanSearchUrl}/search?q=${encodeURIComponent(keyword)}&categories=general&language=auto&time_range=&safesearch=0&theme=simple&format=json`
 
-                console.log('[Tool: search_server] Requesting:', url)
-                if (Object.keys(headers).length > 0) {
-                    console.log('[Tool: search_server] With headers:', JSON.stringify(headers))
+                console.log('[Tool: search_server] ========== 开始 SearXNG 搜索 ==========')
+                console.log('[Tool: search_server] 搜索关键词:', keyword)
+                console.log('[Tool: search_server] 目标 URL:', targetUrl)
+                console.log('[Tool: search_server] 使用代理: /proxy/search')
+
+                // 使用代理，避免 CORS 问题
+                const proxyHeaders = {
+                    'X-Search-URL': targetUrl
                 }
 
-                const response = await fetch(url, { headers })
+                // 如果有认证，添加到代理头
+                if (searchIsAuth && searchAuthCode) {
+                    proxyHeaders['X-Search-Auth'] = `Bearer ${searchAuthCode}`
+                    console.log('[Tool: search_server] 启用认证: 是 (Token长度: ' + searchAuthCode.length + ')')
+                }
+
+                console.log('[Tool: search_server] 代理请求头:', JSON.stringify({ ...proxyHeaders, 'X-Search-Auth': proxyHeaders['X-Search-Auth'] ? '***已隐藏***' : undefined }, null, 2))
+
+                const response = await fetch('/proxy/search', {
+                    headers: proxyHeaders
+                })
+
+                console.log('[Tool: search_server] 响应状态:', response.status, response.statusText)
+                console.log('[Tool: search_server] 响应头 Content-Type:', response.headers.get('content-type'))
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`)
+                    const errorText = await response.text()
+                    console.error('[Tool: search_server] HTTP 错误响应内容:', errorText)
+                    throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`)
                 }
 
                 const data = await response.json()
+                console.log('[Tool: search_server] 响应数据结构:', JSON.stringify(Object.keys(data), null, 2))
+                console.log('[Tool: search_server] 原始结果数量:', data.results?.length || 0)
 
                 // 提取有用信息，减少 token
                 // SearXNG json format usually has 'results' array
@@ -92,19 +116,17 @@ export default {
                     content: item.content
                 }))
 
-                const result = {
+                console.log('[Tool: search_server] ========== 搜索完成 ==========')
+                console.log('[Tool: search_server] 返回结果数:', simplifiedResults.length)
+                console.log('[Tool: search_server] ======================================')
+
+                return {
                     success: true,
                     data: simplifiedResults
                 }
-                console.log('[Tool: search_server] 搜索成功，结果数:', simplifiedResults.length)
-                return result
             } else if (searchEngine === 'whoogle') {
-                // 暂时只实现 searxng，whoogle 预留
-                // return {
-                //    success: false,
-                //    message: '暂不支持 Whoogle 搜索，请切换为 SearXNG。'
-                // }
-
+                // 修复 URL 双斜杠问题：移除 searchUrl 末尾的斜杠
+                const cleanSearchUrl = searchUrl.replace(/\/$/, '')
                 const queryParams = new URLSearchParams({
                     q: keyword,
                     format: 'json',
@@ -116,30 +138,41 @@ export default {
                     page: '1'
                 })
 
-                const url = `${searchUrl}/search?${queryParams.toString()}`
+                const targetUrl = `${cleanSearchUrl}/search?${queryParams.toString()}`
 
-                console.log('[Tool: search_server] Requesting (Whoogle):', url)
-                if (Object.keys(headers).length > 0) {
-                    console.log('[Tool: search_server] With headers:', JSON.stringify(headers))
+                console.log('[Tool: search_server] ========== 开始 Whoogle 搜索 ==========')
+                console.log('[Tool: search_server] 搜索关键词:', keyword)
+                console.log('[Tool: search_server] 目标 URL:', targetUrl)
+                console.log('[Tool: search_server] 使用代理: /proxy/search')
+
+                // 使用代理，避免 CORS 问题
+                const proxyHeaders = {
+                    'X-Search-URL': targetUrl
                 }
 
-                const response = await fetch(url, { headers })
+                // 如果有认证，添加到代理头
+                if (searchIsAuth && searchAuthCode) {
+                    proxyHeaders['X-Search-Auth'] = `Bearer ${searchAuthCode}`
+                    console.log('[Tool: search_server] 启用认证: 是 (Token长度: ' + searchAuthCode.length + ')')
+                }
+
+                console.log('[Tool: search_server] 代理请求头:', JSON.stringify({ ...proxyHeaders, 'X-Search-Auth': proxyHeaders['X-Search-Auth'] ? '***已隐藏***' : undefined }, null, 2))
+
+                const response = await fetch('/proxy/search', {
+                    headers: proxyHeaders
+                })
+
+                console.log('[Tool: search_server] 响应状态:', response.status, response.statusText)
+                console.log('[Tool: search_server] 响应头 Content-Type:', response.headers.get('content-type'))
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`)
+                    const errorText = await response.text()
+                    console.error('[Tool: search_server] HTTP 错误响应内容:', errorText)
+                    throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`)
                 }
 
                 const data = await response.json()
-
-                // Whoogle (via certain instances/configurations) might return different structures.
-                // Assuming standard Google-like result or whatever the user's Whoogle instance returns for format=json
-                // Based on common Whoogle implementations, format=json might return direct results or need parsing.
-                // However, without a specific response format provided by the user, we will assume a generic 'results' or top-level array
-                // If the user's example implies standard integration, let's look for 'results' or map directly if it's an array.
-
-                // Note: Whoogle usually returns HTML unless specifically patched or using an API wrapper. 
-                // But the user specified `format: json`, implying their instance supports it.
-                // We will try to adapt to common JSON structures.
+                console.log('[Tool: search_server] 响应数据结构:', JSON.stringify(Object.keys(data), null, 2))
 
                 let results = []
                 if (Array.isArray(data)) {
@@ -147,10 +180,10 @@ export default {
                 } else if (data.results) {
                     results = data.results
                 } else {
-                    // Fallback: try to see if data itself is the result object or contains items
-                    // Some proxies return { links: [...] }
                     results = data.links || []
                 }
+
+                console.log('[Tool: search_server] 原始结果数量:', results.length)
 
                 const simplifiedResults = results.slice(0, 5).map(item => ({
                     title: item.title || item.text,
@@ -158,12 +191,14 @@ export default {
                     content: item.body || item.snippet || item.desc || ''
                 }))
 
-                const result = {
+                console.log('[Tool: search_server] ========== 搜索完成 ==========')
+                console.log('[Tool: search_server] 返回结果数:', simplifiedResults.length)
+                console.log('[Tool: search_server] ======================================')
+
+                return {
                     success: true,
                     data: simplifiedResults
                 }
-                console.log('[Tool: search_server] Whoogle 搜索成功，结果数:', simplifiedResults.length)
-                return result
             }
 
             return {
@@ -172,12 +207,16 @@ export default {
             }
 
         } catch (e) {
-            const result = {
+            console.error('[Tool: search_server] ========== 搜索异常 ==========')
+            console.error('[Tool: search_server] 异常类型:', e.constructor.name)
+            console.error('[Tool: search_server] 异常信息:', e.message)
+            console.error('[Tool: search_server] 异常堆栈:', e.stack)
+            console.error('[Tool: search_server] ======================================')
+
+            return {
                 success: false,
                 message: `搜索失败: ${e.message}`
             }
-            console.error('[Tool: search_server] Error:', e)
-            return result
         }
     }
 }

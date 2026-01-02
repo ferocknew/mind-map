@@ -92,6 +92,48 @@ module.exports = {
           }
           return path.replace(/^\/proxy\/ai/, '')
         }
+      },
+      // 搜索引擎代理 - 通过请求头 X-Search-URL 指定目标地址
+      '^/proxy/search': {
+        target: 'http://placeholder.com',
+        changeOrigin: true,
+        router: function (req) {
+          // 从请求头获取真正的目标地址
+          const targetUrl = req.headers['x-search-url']
+          if (targetUrl) {
+            try {
+              const url = new URL(targetUrl)
+              return url.origin
+            } catch (e) {
+              console.error('[Search Proxy] Invalid X-Search-URL:', targetUrl)
+            }
+          }
+          return 'http://placeholder.com'
+        },
+        pathRewrite: function (path, req) {
+          // 从请求头获取目标路径
+          const targetUrl = req.headers['x-search-url']
+          if (targetUrl) {
+            try {
+              const url = new URL(targetUrl)
+              console.log('[Search Proxy] Routing to:', url.origin + url.pathname + url.search)
+              return url.pathname + url.search
+            } catch (e) {
+              console.error('[Search Proxy] Invalid X-Search-URL:', targetUrl)
+            }
+          }
+          return path.replace(/^\/proxy\/search/, '')
+        },
+        onProxyReq: function (proxyReq, req, res) {
+          // 转发 Authorization 请求头
+          const targetUrl = req.headers['x-search-url']
+          if (targetUrl) {
+            const authHeader = req.headers['x-search-auth']
+            if (authHeader) {
+              proxyReq.setHeader('Authorization', authHeader)
+            }
+          }
+        }
       }
     }
   }
