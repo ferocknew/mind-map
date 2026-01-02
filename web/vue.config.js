@@ -42,6 +42,7 @@ module.exports = {
   devServer: {
     hot: true,
     liveReload: true,
+    allowedHosts: 'all',
     watchOptions: {
       ignored: /node_modules/,
       aggregateTimeout: 300,
