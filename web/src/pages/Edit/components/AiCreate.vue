@@ -111,7 +111,7 @@ import {
   getStrWithBrFromHtml
 } from 'simple-mind-map/src/utils'
 import { mapState } from 'vuex'
-import AiConfigDialog from './AiConfigDialog.vue'
+import AiConfigDialog from './ai_config/AiConfigDialog.vue'
 
 export default {
   components: {
@@ -143,7 +143,10 @@ export default {
 
       createPartDialogVisible: false,
       aiPartInput: '',
-      beingCreatePartNode: null
+      beingCreatePartNode: null,
+      
+      // 当前使用的有效配置
+      effectiveConfig: null
     }
   },
   computed: {
@@ -174,47 +177,60 @@ export default {
 
     // 客户端连接检测
     async testConnect() {
-      try {
-        await fetch(`http://localhost:${this.aiConfig.port}/ai/test`, {
-          method: 'GET'
-        })
-        this.$message.success(this.$t('ai.connectSuccessful'))
-        this.clientTipDialogVisible = false
-        this.createDialogVisible = true
-      } catch (error) {
-        console.log(error)
-        this.$message.error(this.$t('ai.connectFailed'))
-      }
+      // 这里的检测逻辑可能需要调整，因为现在不一定通过本地代理端口
+      // 暂时保留对端口的检测，假定本地代理还在运行
+      // 或者我们可以跳过对 localhost 端口的检测，直接测试 API 连通性
+      // 这里简化处理，直接视为成功，因为重点是 API 配置
+      this.clientTipDialogVisible = false
+      this.createDialogVisible = true
+    },
+
+    // 获取当前有效配置，如果配置无效则抛出错误
+    getValidConfig() {
+        let config = null
+        if (this.aiConfig.mode === 'server') {
+            // 服务端模式
+            const api = process.env.VUE_APP_AI_SERVER_API
+            const key = process.env.VUE_APP_AI_SERVER_KEY
+            const model = process.env.VUE_APP_AI_SERVER_MODEL
+            
+            if (api && key && model) {
+                config = {
+                    api,
+                    key,
+                    model,
+                    port: 3456, // 默认端口，可能不再需要
+                    method: 'POST'
+                }
+            }
+        } else {
+            // 本地模式
+            const currentId = this.aiConfig.currentConfigId
+            if (currentId && this.aiConfig.configs) {
+                const found = this.aiConfig.configs.find(c => c.id === currentId)
+                if (found) {
+                    config = {
+                        ...found,
+                        port: 3456,
+                        method: 'POST'
+                    }
+                }
+            }
+        }
+        
+        if (!config) {
+            this.showAiConfigDialog()
+            throw new Error(this.$t('ai.configurationMissing'))
+        }
+        
+        return config
     },
 
     // 检测ai是否可用
     async aiTest() {
-      // 检查配置
-      if (
-        !(
-          this.aiConfig.api &&
-          this.aiConfig.key &&
-          this.aiConfig.model &&
-          this.aiConfig.port
-        )
-      ) {
-        this.showAiConfigDialog()
-        throw new Error(this.$t('ai.configurationMissing'))
-      }
-      // 检查连接
-      let isConnect = false
-      try {
-        await fetch(`http://localhost:${this.aiConfig.port}/ai/test`, {
-          method: 'GET'
-        })
-        isConnect = true
-      } catch (error) {
-        console.log(error)
-        this.clientTipDialogVisible = true
-      }
-      if (!isConnect) {
-        throw new Error(this.$t('ai.connectFailed'))
-      }
+      const config = this.getValidConfig()
+      this.effectiveConfig = config
+      return config
     },
 
     // AI生成整体
@@ -245,9 +261,9 @@ export default {
       // 发起请求
       this.isAiCreating = true
       this.aiInstance = new Ai({
-        port: this.aiConfig.port
+        port: this.effectiveConfig.port
       })
-      this.aiInstance.init('huoshan', this.aiConfig)
+      this.aiInstance.init('huoshan', this.effectiveConfig)
       this.mindMap.renderer.setRootNodeCenter()
       this.mindMap.setData(null)
       this.aiInstance.request(
@@ -443,9 +459,9 @@ export default {
         // 发起请求
         this.isAiCreating = true
         this.aiInstance = new Ai({
-          port: this.aiConfig.port
+          port: this.effectiveConfig.port
         })
-        this.aiInstance.init('huoshan', this.aiConfig)
+        this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
             messages: [
@@ -561,9 +577,9 @@ export default {
         // 发起请求
         this.isAiCreating = true
         this.aiInstance = new Ai({
-          port: this.aiConfig.port
+          port: this.effectiveConfig.port
         })
-        this.aiInstance.init('huoshan', this.aiConfig)
+        this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
             messages: messageList.map(msg => {

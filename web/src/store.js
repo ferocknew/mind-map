@@ -28,6 +28,11 @@ const store = new Vuex.Store({
     extraTextOnExport: '', // 导出时底部添加的文字
     isDragOutlineTreeNode: false, // 当前是否正在拖拽大纲树的节点
     aiConfig: {
+      mode: 'local', // 'local' | 'server'
+      currentConfigId: '',
+      serverPasswordVerified: false,
+      configs: [],
+      // 兼容字段，用于运行时获取当前有效配置
       api: 'http://ark.cn-beijing.volces.com/api/v3/chat/completions',
       key: '',
       model: '',
@@ -47,17 +52,35 @@ const store = new Vuex.Store({
 
     // 设置本地配置
     setLocalConfig(state, data) {
-      const aiConfigKeys = Object.keys(state.aiConfig)
+      if (data.aiConfig) {
+        state.aiConfig = {
+          ...state.aiConfig,
+          ...data.aiConfig
+        }
+      }
+      
+      const localConfigKeys = Object.keys(state.localConfig)
       Object.keys(data).forEach(key => {
-        if (aiConfigKeys.includes(key)) {
-          state.aiConfig[key] = data[key]
-        } else {
+        if (localConfigKeys.includes(key)) {
           state.localConfig[key] = data[key]
         }
       })
+      
       storeLocalConfig({
         ...state.localConfig,
-        ...state.aiConfig
+        aiConfig: state.aiConfig
+      })
+    },
+
+    // 专门设置 AI 配置
+    setAiConfig(state, data) {
+      state.aiConfig = {
+        ...state.aiConfig,
+        ...data
+      }
+      storeLocalConfig({
+        ...state.localConfig,
+        aiConfig: state.aiConfig
       })
     },
 
