@@ -112,6 +112,7 @@ import {
 } from 'simple-mind-map/src/utils'
 import { mapState } from 'vuex'
 import AiConfigDialog from './ai_config/AiConfigDialog.vue'
+import { DEFAULT_AI_RULES } from '@/utils/config'
 
 export default {
   components: {
@@ -266,10 +267,10 @@ export default {
       this.aiInstance.request(
         {
           messages: [
-              ...(this.aiConfig.aiSystemPrompt ? [{
+              {
                   role: 'system',
-                  content: this.aiConfig.aiSystemPrompt
-              }] : []),
+                  content: this.aiConfig.aiSystemPrompt || DEFAULT_AI_RULES
+              },
               {
                 role: 'user',
                 content: `${this.$t(
@@ -580,10 +581,10 @@ export default {
         this.aiInstance.request(
           {
             messages: [
-              ...(this.aiConfig.aiSystemPrompt ? [{
+              {
                   role: 'system',
-                  content: this.aiConfig.aiSystemPrompt
-              }] : []),
+                  content: this.aiConfig.aiSystemPrompt || DEFAULT_AI_RULES
+              },
               ...messageList.map(msg => {
               return {
                 role: 'user',
