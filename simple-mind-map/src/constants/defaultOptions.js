@@ -16,7 +16,7 @@ export const defaultOpt = {
   // 如果结构为鱼骨图，那么可以通过该选项控制倾斜角度
   fishboneDeg: 45,
   // 主题
-  theme: 'default', // 内置主题：default（默认主题）
+  theme: 'dark4', // 内置主题：dark4（暗色4）
   // 主题配置，会和所选择的主题进行合并
   themeConfig: {},
   // 放大缩小的增量比例

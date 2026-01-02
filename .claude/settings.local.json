@@ -4,7 +4,8 @@
       "mcp__memory__create_entities",
       "Bash(chmod:*)",
       "Bash(pnpm install)",
-      "Bash(node scripts/updateVersion.js:*)"
+      "Bash(node scripts/updateVersion.js:*)",
+      "mcp__memory__create_relations"
     ]
   }
 }
