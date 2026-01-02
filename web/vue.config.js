@@ -4,6 +4,9 @@ const isLibrary = process.env.NODE_ENV === 'library'
 
 const WebpackDynamicPublicPathPlugin = require('webpack-dynamic-public-path')
 
+// 从环境变量获取外部访问地址，支持 nginx 反向代理
+const devServerPublic = process.env.DEV_SERVER_PUBLIC || ''
+
 module.exports = {
   publicPath: isDev ? '' : './dist',
   outputDir: '../dist',
@@ -43,6 +46,23 @@ module.exports = {
     hot: true,
     liveReload: true,
     disableHostCheck: true,
+    // 支持 nginx 反向代理：告诉客户端应该通过哪个地址访问 dev server
+    public: devServerPublic || undefined,
+    // WebSocket 连接配置
+    sockHost: devServerPublic ? new URL(devServerPublic).hostname : undefined,
+    sockPath: '/sockjs-node',
+    sockPort: devServerPublic ? new URL(devServerPublic).port : undefined,
+    client: {
+      // 客户端连接配置
+      webSocketURL: devServerPublic
+        ? {
+            protocol: 'wss:',
+            hostname: new URL(devServerPublic).hostname,
+            port: new URL(devServerPublic).port,
+            pathname: '/sockjs-node'
+          }
+        : undefined
+    },
     watchOptions: {
       ignored: /node_modules/,
       aggregateTimeout: 300,

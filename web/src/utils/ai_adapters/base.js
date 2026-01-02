@@ -14,9 +14,10 @@ class BaseAdapter {
 
     /**
      * Determine if running in development environment
+     * Check NODE_ENV instead of hostname to support reverse proxy
      */
     isDev() {
-        return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        return process.env.NODE_ENV === 'development'
     }
 
     /**

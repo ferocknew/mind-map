@@ -8,6 +8,9 @@ services:
       - "58081:8080"
     environment:
       - NODE_ENV=development
+      # 告诉 webpack dev server 客户端应该通过哪个地址访问
+      # 支持 nginx 反向代理，使用外部可访问的地址
+      - DEV_SERVER_PUBLIC=https://<server_name>:<port>
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080"]
