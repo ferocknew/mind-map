@@ -34,13 +34,13 @@
             <div class="avatar">
               <span class="icon el-icon-user"></span>
             </div>
-            <div class="content">{{ item.content }}</div>
+            <div class="content" :style="{ color: themeColor }">{{ item.content }}</div>
           </div>
           <div class="chatItemInner" v-else-if="item.type === 'ai'">
             <div class="avatar">
               <span class="icon iconfont iconAIshengcheng"></span>
             </div>
-            <div class="content" v-html="item.content"></div>
+            <div class="content" v-html="item.content" :style="{ color: themeColor }"></div>
           </div>
         </div>
       </div>
@@ -87,12 +87,18 @@ export default {
     Sidebar,
     AiChatHistory
   },
+      props: {
+    mindMap: {
+      type: Object
+    }
+  },
   data() {
     return {
       text: '',
       chatList: [],
       isCreating: false,
-      currentSessionId: null
+      currentSessionId: null,
+      themeColor: ''
     }
   },
   computed: {
@@ -120,10 +126,26 @@ export default {
                 saveSession(this.currentSessionId, val)
             }
         }, 1000)
+    },
+    mindMap: {
+      handler(val) {
+        if (val) {
+          this.items = []
+          this.updateThemeColor()
+          this.mindMap.on('view_theme_change', this.updateThemeColor)
+          this.mindMap.on('data_change', this.updateThemeColor)
+        }
+      },
+      immediate: true
     }
   },
   created() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    if (this.mindMap) {
+      this.mindMap.off('view_theme_change', this.updateThemeColor)
+      this.mindMap.off('data_change', this.updateThemeColor)
+    }
+  },
   methods: {
     onKeydown(e) {
       if (e.keyCode === 13) {
@@ -224,6 +246,13 @@ export default {
 
     modifyAiConfig() {
       this.$bus.$emit('showAiConfigDialog')
+    },
+
+    updateThemeColor() {
+      if (this.mindMap && this.mindMap.renderer && this.mindMap.renderer.root) {
+        const color = this.mindMap.renderer.root.getStyle('color')
+        this.themeColor = color
+      }
     }
   }
 }
@@ -333,20 +362,20 @@ export default {
           }
         }
 
-        /deep/ .content {
-          width: 100%;
-          overflow: hidden;
-          color: #3f4a54;
-          font-size: 14px;
-          line-height: 1.5;
+          /deep/ .content {
+            width: 100%;
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #3f4a54;
 
-          p {
-            margin-bottom: 12px;
+            p {
+              margin-bottom: 12px;
 
-            &:last-of-type {
-              margin-bottom: 0;
+              &:last-of-type {
+                margin-bottom: 0;
+              }
             }
-          }
 
           h1,
           h2,
