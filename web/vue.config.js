@@ -51,6 +51,37 @@ module.exports = {
       '^/api/v3/': {
         target: 'http://ark.cn-beijing.volces.com',
         changeOrigin: true
+      },
+      // 通用 AI API 代理 - 通过请求头 X-Target-URL 指定目标地址
+      '^/proxy/ai': {
+        target: 'http://placeholder.com',
+        changeOrigin: true,
+        router: function (req) {
+          // 从请求头获取真正的目标地址
+          const targetUrl = req.headers['x-target-url']
+          if (targetUrl) {
+            try {
+              const url = new URL(targetUrl)
+              return url.origin
+            } catch (e) {
+              console.error('Invalid X-Target-URL:', targetUrl)
+            }
+          }
+          return 'http://placeholder.com'
+        },
+        pathRewrite: function (path, req) {
+          // 从请求头获取目标路径
+          const targetUrl = req.headers['x-target-url']
+          if (targetUrl) {
+            try {
+              const url = new URL(targetUrl)
+              return url.pathname + url.search
+            } catch (e) {
+              console.error('Invalid X-Target-URL:', targetUrl)
+            }
+          }
+          return path.replace(/^\/proxy\/ai/, '')
+        }
       }
     }
   }

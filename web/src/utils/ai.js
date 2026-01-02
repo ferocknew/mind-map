@@ -1,66 +1,65 @@
-class Ai {
-  constructor(options = {}) {
-    this.options = options
+import OpenAIAdapter from './ai_adapters/openai'
+import AnthropicAdapter from './ai_adapters/anthropic'
 
-    this.baseData = {}
+class Ai {
+  constructor() {
+    this.adapter = null
     this.controller = null
     this.currentChunk = ''
     this.content = ''
   }
 
+  /**
+   * 初始化 AI 实例
+   * @param {string} type - 类型标识（保留参数，兼容旧调用）
+   * @param {Object} options - 配置选项
+   */
   init(type = 'huoshan', options = {}) {
-    // 火山引擎接口
-    if (type === 'huoshan') {
-      this.baseData = {
-        api: options.api,
-        method: options.method,
-        headers: {
-          Authorization: 'Bearer ' + options.key
-        },
-        data: {
-          model: options.model,
-          stream: true
-        }
-      }
+    // 根据类型选择适配器
+    const adapterType = options.type || 'OpenAI'
+
+    if (adapterType === 'Anthropic') {
+      this.adapter = new AnthropicAdapter()
+    } else {
+      this.adapter = new OpenAIAdapter()
     }
+
+    this.adapter.init(options)
   }
 
-  async request(data, progress = () => {}, end = () => {}, err = () => {}) {
+  /**
+   * 发起流式请求
+   * @param {Object} data - 请求数据
+   * @param {Function} progress - 进度回调
+   * @param {Function} end - 结束回调
+   * @param {Function} err - 错误回调
+   */
+  async request(data, progress = () => { }, end = () => { }, err = () => { }) {
     try {
-      const res = await this.postMsg(data)
+      const reader = await this.postMsg(data)
       const decoder = new TextDecoder()
-      while (1) {
-        const { done, value } = await res.read()
+
+      while (true) {
+        const { done, value } = await reader.read()
         if (done) {
+          end(this.content)
           return
         }
-        // 拿到当前切片的数据
+
         const text = decoder.decode(value)
-        // 处理切片数据
-        let chunk = this.handleChunkData(text)
-        // 判断是否有不完整切片，如果有，合并下一次处理，没有则获取数据
-        if (this.currentChunk) continue
-        let isEnd = false
-        const list = chunk
-          .split('\n')
-          .filter(item => {
-            isEnd = item.includes('[DONE]')
-            return !!item && !isEnd
-          })
-          .map(item => {
-            return JSON.parse(item.replace(/^data:/, ''))
-          })
-        list.forEach(item => {
-          this.content += item.choices
-            .map(item2 => {
-              return item2.delta.content
-            })
-            .join('')
-        })
-        progress(this.content)
-        if (isEnd) {
-          end(this.content)
+        const result = this.adapter.handleStream(text, this.currentChunk)
+
+        this.currentChunk = result.remainingChunk
+        if (result.content) {
+          this.content += result.content
         }
+
+        if (result.isEnd) {
+          end(this.content)
+          return
+        }
+
+        progress(this.content)
       }
     } catch (error) {
       console.log(error)
@@ -71,46 +70,36 @@ class Ai {
     }
   }
 
+  /**
+   * 发送请求
+   * @param {Object} data - 请求数据
+   * @returns {ReadableStreamDefaultReader} 响应流读取器
+   */
   async postMsg(data) {
     this.controller = new AbortController()
-    const res = await fetch(`http://localhost:${this.options.port}/ai/chat`, {
+
+    const config = this.adapter.getRequestConfig()
+    const body = this.adapter.buildRequestBody(data)
+
+    const res = await fetch(config.api, {
       signal: this.controller.signal,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...this.baseData,
-        data: {
-          ...this.baseData.data,
-          ...data
-        }
-      })
+      method: config.method,
+      headers: config.headers,
+      body: body
     })
+
     if (res.status && res.status !== 200) {
-      throw new Error('请求失败')
+      const errorText = await res.text()
+      console.error('API 请求失败:', res.status, errorText)
+      throw new Error(`请求失败: ${res.status}`)
     }
+
     return res.body.getReader()
   }
 
-  handleChunkData(chunk) {
-    chunk = chunk.trim()
-    // 如果存在上一个切片
-    if (this.currentChunk) {
-      chunk = this.currentChunk + chunk
-      this.currentChunk = ''
-    }
-    // 如果存在done,认为是完整切片且是最后一个切片
-    if (chunk.includes('[DONE]')) {
-      return chunk
-    }
-    // 最后一个字符串不为}，则默认切片不完整，保存与下次拼接使用（这种方法不严谨，但已经能解决大部分场景的问题）
-    if (chunk[chunk.length - 1] !== '}') {
-      this.currentChunk = chunk
-    }
-    return chunk
-  }
-
+  /**
+   * 停止请求
+   */
   stop() {
     this.controller.abort()
     this.controller = new AbortController()

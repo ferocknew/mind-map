@@ -199,7 +199,7 @@ export default {
                     api,
                     key,
                     model,
-                    port: 3456, // 默认端口，可能不再需要
+                    type: 'OpenAI', // 服务端模式默认 OpenAI 格式
                     method: 'POST'
                 }
             }
@@ -211,7 +211,6 @@ export default {
                 if (found) {
                     config = {
                         ...found,
-                        port: 3456,
                         method: 'POST'
                     }
                 }
@@ -260,9 +259,7 @@ export default {
       this.aiCreatingMaskVisible = true
       // 发起请求
       this.isAiCreating = true
-      this.aiInstance = new Ai({
-        port: this.effectiveConfig.port
-      })
+      this.aiInstance = new Ai()
       this.aiInstance.init('huoshan', this.effectiveConfig)
       this.mindMap.renderer.setRootNodeCenter()
       this.mindMap.setData(null)
@@ -458,9 +455,7 @@ export default {
         this.aiCreatingMaskVisible = true
         // 发起请求
         this.isAiCreating = true
-        this.aiInstance = new Ai({
-          port: this.effectiveConfig.port
-        })
+        this.aiInstance = new Ai()
         this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
@@ -576,9 +571,7 @@ export default {
         await this.aiTest()
         // 发起请求
         this.isAiCreating = true
-        this.aiInstance = new Ai({
-          port: this.effectiveConfig.port
-        })
+        this.aiInstance = new Ai()
         this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
