@@ -22,7 +22,9 @@ export const aiConfigDialogMixin = {
       localManagerVisible: false,
       aiSystemPrompt: '',
       searchEngine: 'searxng',
-      searchUrl: ''
+      searchUrl: '',
+      searchIsAuth: false,
+      searchAuthCode: ''
     }
   },
   computed: {
@@ -42,15 +44,17 @@ export const aiConfigDialogMixin = {
         this.activeTab = this.aiConfig.mode
         this.serverVerified = this.aiConfig.serverPasswordVerified
         if (this.serverVerified) {
-            this.accessPassword = '*****' // 仅作显示，不暴露真实密码
+          this.accessPassword = '*****' // 仅作显示，不暴露真实密码
         } else {
-            this.accessPassword = ''
+          this.accessPassword = ''
         }
         // 如果 aiSystemPrompt 为空，则使用默认规则
         this.aiSystemPrompt = this.aiConfig.aiSystemPrompt || DEFAULT_AI_RULES
         // 初始化搜索配置
         this.searchEngine = this.aiConfig.searchEngine || 'searxng'
         this.searchUrl = this.aiConfig.searchUrl || ''
+        this.searchIsAuth = this.aiConfig.searchIsAuth || false
+        this.searchAuthCode = this.aiConfig.searchAuthCode || ''
       }
     },
     dialogVisible(val) {
@@ -98,7 +102,9 @@ export const aiConfigDialogMixin = {
         mode: this.activeTab === 'rules' || this.activeTab === 'search' ? this.aiConfig.mode : this.activeTab,
         aiSystemPrompt: this.aiSystemPrompt,
         searchEngine: this.searchEngine,
-        searchUrl: this.searchUrl
+        searchUrl: this.searchUrl,
+        searchIsAuth: this.searchIsAuth,
+        searchAuthCode: this.searchAuthCode
       }
 
       if (this.activeTab === 'server') {

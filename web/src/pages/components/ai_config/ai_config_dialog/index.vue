@@ -125,12 +125,23 @@
                         <el-option value="whoogle" :label="$t('ai.whoogle')"></el-option>
                     </el-select>
                 </div>
+                </div>
                 <div class="form-item">
                     <label>{{ $t('ai.searchUrl') }}</label>
                     <el-input
                         v-model="searchUrl"
                         :placeholder="searchEngine === 'searxng' ? $t('ai.searxngUrlTip') : $t('ai.whoogleUrlTip')"
                     ></el-input>
+                </div>
+                <div class="form-item" style="display: block;">
+                  <el-checkbox v-model="searchIsAuth" style="margin-bottom: 10px;">{{ $t('ai.enableHttpAuth') }}</el-checkbox>
+                  <el-input
+                      v-if="searchIsAuth"
+                      v-model="searchAuthCode"
+                      :placeholder="$t('ai.httpAuthPlaceholder')"
+                      type="password"
+                      show-password
+                  ></el-input>
                 </div>
             </div>
         </div>

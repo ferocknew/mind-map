@@ -584,6 +584,8 @@ export default {
     whoogle: 'Whoogle',
     searxngUrlTip: 'SearXNG 服务地址，如：https://searxng.example.com',
     whoogleUrlTip: 'Whoogle 服务地址，如：https://whoogle.example.com',
+    enableHttpAuth: '开启 HTTP 认证',
+    httpAuthPlaceholder: '请输入认证 Authorization Code',
     // 新增
     newChat: '新建对话',
     historyRecords: '历史记录',

@@ -3,6 +3,7 @@ import read_map from './tools/read_map'
 import delete_node from './tools/delete_node'
 import update_node from './tools/update_node'
 import overwrite_map from './tools/overwrite_map'
+import search_server from './tools/search_server'
 
 // 注册所有工具
 const tools = {
@@ -10,7 +11,8 @@ const tools = {
     read_map,
     delete_node,
     update_node,
-    overwrite_map
+    overwrite_map,
+    search_server
 }
 
 /**
