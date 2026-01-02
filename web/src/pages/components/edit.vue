@@ -123,7 +123,7 @@ import AssociativeLineStyle from './AssociativeLineStyle.vue'
 import NodeImgPlacementToolbar from './NodeImgPlacementToolbar.vue'
 import NodeNoteSidebar from './NodeNoteSidebar.vue'
 import AiCreate from './ai_create.vue'
-import AiChat from './ai_chat.vue'
+import AiChat from './ai_chat/index.vue'
 
 // 注册插件
 MindMap.usePlugin(MiniMap)
@@ -373,7 +373,7 @@ export default {
         useLeftKeySelectionRightKeyDrag: this.useLeftKeySelectionRightKeyDrag,
         customInnerElsAppendTo: null,
         customHandleClipboardText: handleClipboardText,
-        defaultNodeImage: require('../../../assets/img/图片加载失败.svg'),
+        defaultNodeImage: require('@/assets/img/图片加载失败.svg'),
         initRootNodePosition: ['center', 'center'],
         handleIsSplitByWrapOnPasteCreateNewNode: () => {
           return this.$confirm(

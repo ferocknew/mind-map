@@ -1,0 +1,395 @@
+.nodeExportDialog {
+  .exportContainer {
+    &.isDark {
+      .downloadTypeSelectBox {
+        .downloadTypeList {
+          background-color: #363b3f;
+
+          .downloadTypeItem {
+            background-color: #363b3f;
+
+            &.active {
+              background-color: #262a2e;
+            }
+
+            .name {
+              color: hsla(0, 0%, 100%, 0.9);
+            }
+          }
+        }
+
+        .downloadTypeContent {
+          .nameInputBox {
+            border-bottom: 1px solid hsla(0, 0%, 100%, 0.6);
+
+            .nameInput {
+              .name {
+                color: hsla(0, 0%, 100%, 0.6);
+              }
+            }
+
+            .closeBtn {
+              color: hsla(0, 0%, 100%, 0.6);
+            }
+          }
+
+          .contentBox {
+            .contentRow {
+              .contentName {
+                color: hsla(0, 0%, 100%, 0.6);
+              }
+
+              .contentValue {
+                color: hsla(0, 0%, 100%, 0.6);
+
+                &.info {
+                  background-color: transparent;
+                }
+              }
+            }
+          }
+
+          .btnList {
+            border-top: 1px solid hsla(0, 0%, 100%, 0.6);
+          }
+        }
+      }
+    }
+  }
+}
+
+.nodeExportDialog {
+  &.isDark {
+    /deep/ .el-dialog__body {
+      .el-checkbox {
+        .el-checkbox__label {
+          color: hsla(0, 0%, 100%, 0.6);
+        }
+      }
+    }
+  }
+
+  /deep/ .el-dialog {
+    border-radius: 10px;
+    overflow: hidden;
+
+    .el-dialog__header {
+      display: none;
+    }
+  }
+
+  /deep/ .el-dialog__body {
+    padding: 0;
+
+    .el-checkbox__input.is-checked + .el-checkbox__label {
+      color: #409eff !important;
+    }
+
+    .el-checkbox {
+      .el-checkbox__label {
+        color: #1a1a1a;
+      }
+    }
+  }
+
+  &.isMobile {
+    .exportContainer {
+      .downloadTypeSelectBox {
+        flex-direction: column;
+
+        .downloadTypeList {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          overflow-x: auto;
+          height: 60px;
+          overflow-y: hidden;
+
+          .downloadTypeItem {
+            width: 100px;
+            flex-shrink: 0;
+            padding-left: 5px;
+            padding-right: 5px;
+
+            .icon {
+              margin-right: 5px;
+
+              &.checked {
+                display: none !important;
+              }
+            }
+          }
+        }
+
+        .downloadTypeContent {
+          .nameInputBox {
+            height: 70px;
+
+            .nameInput {
+              .name {
+                margin-bottom: 5px;
+              }
+            }
+          }
+
+          .contentBox {
+            .contentRow {
+              flex-direction: column;
+
+              .contentName {
+                margin-bottom: 10px;
+              }
+
+              .contentValue {
+                .valueItem {
+                  .valueSubItem {
+                    display: flex;
+                    flex-direction: column;
+
+                    .name {
+                      margin-bottom: 5px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .exportContainer {
+    width: 100%;
+    height: 552px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .downloadTypeSelectBox {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+
+      .downloadTypeList {
+        width: 208px;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background-color: #f2f4f7;
+        flex-shrink: 0;
+        padding: 16px 0;
+
+        .downloadTypeItem {
+          width: 100%;
+          height: 52px;
+          padding: 0 30px;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+
+          &.active {
+            background-color: #fff;
+
+            .icon {
+              &.checked {
+                display: block;
+              }
+            }
+          }
+
+          .icon {
+            font-size: 25px;
+            font-weight: 700;
+
+            &.checked {
+              color: #409eff;
+              font-size: 20px;
+              margin-left: auto;
+              display: none;
+            }
+          }
+
+          .typeIcon {
+            margin-right: 18px;
+            flex-shrink: 0;
+            width: 23px;
+            height: 26px;
+            background-size: cover;
+
+            &.png {
+              background-image: url('~@/assets/img/foramt/2.png');
+            }
+
+            &.pdf {
+              background-image: url('~@/assets/img/foramt/4.png');
+            }
+
+            &.md {
+              background-image: url('~@/assets/img/foramt/5.png');
+            }
+
+            &.json {
+              background-image: url('~@/assets/img/foramt/10.png');
+            }
+
+            &.svg {
+              background-image: url('~@/assets/img/foramt/3.png');
+            }
+
+            &.smm {
+              background-image: url('~@/assets/img/foramt/1.png');
+            }
+
+            &.xmind {
+              background-image: url('~@/assets/img/foramt/6.png');
+            }
+
+            &.txt {
+              background-image: url('~@/assets/img/foramt/7.png');
+            }
+
+            &.mm {
+              background-image: url('~@/assets/img/foramt/8.png');
+            }
+
+            &.xlsx {
+              background-image: url('~@/assets/img/foramt/9.png');
+            }
+          }
+
+          .name {
+            color: #333;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .downloadTypeContent {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .nameInputBox {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 67px;
+          flex-shrink: 0;
+          border-bottom: 1px solid #f2f4f7;
+          padding-left: 40px;
+          padding-right: 20px;
+          padding-top: 16px;
+
+          .nameInput {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+            font-weight: bold;
+
+            .name {
+              margin-right: 10px;
+              font-size: 15px;
+              color: #333;
+              font-weight: bold;
+            }
+          }
+
+          .closeBtn {
+            font-size: 20px;
+            cursor: pointer;
+          }
+        }
+
+        .contentBox {
+          height: 100%;
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding: 15px 40px;
+
+          .contentRow {
+            display: flex;
+            font-size: 14px;
+            margin-bottom: 20px;
+
+            &:last-of-type {
+              margin-bottom: 0;
+            }
+
+            .contentName {
+              min-width: 40px;
+              color: #808080;
+              flex-shrink: 0;
+              font-size: 13px;
+              font-weight: 500;
+              line-height: 25px;
+              margin-right: 12px;
+            }
+
+            .contentValue {
+              color: #808080;
+              line-height: 23px;
+              font-weight: 500;
+              border: 1px solid transparent;
+              font-size: 14px;
+
+              &.info {
+                color: rgb(90, 158, 247);
+                background-color: rgb(245, 248, 249);
+                border: 1px solid rgb(90, 158, 247);
+                border-radius: 5px;
+                padding: 0 16px;
+              }
+
+              .valueItem {
+                .valueSubItem {
+                  margin-bottom: 12px;
+                  display: flex;
+                  align-items: center;
+
+                  &:last-of-type {
+                    margin-right: 0;
+                  }
+
+                  &.alignCenter {
+                    align-items: center;
+                  }
+
+                  .name {
+                    margin-right: 12px;
+                    min-width: 85px;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .btnList {
+          padding: 0 40px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          height: 69px;
+          flex-shrink: 0;
+          border-top: 1px solid #f2f4f7;
+
+          /deep/ .el-button--small {
+            height: 25px;
+            padding: 0 30px;
+            border-radius: 5px;
+          }
+        }
+      }
+    }
+  }
+}
