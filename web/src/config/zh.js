@@ -507,10 +507,6 @@ export const langList = [
   {
     value: 'en',
     name: 'English'
-  },
-  {
-    value: 'vi',
-    name: 'Tiếng Việt'
   }
 ]
 
