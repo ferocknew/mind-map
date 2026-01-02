@@ -19,4 +19,4 @@ COPY . /app/
 EXPOSE 8080
 
 # 启动应用
-CMD ["pnpm", "--filter", "web", "run", "serve"]
+CMD ["pnpm", "--filter", "thoughts", "run", "serve"]
