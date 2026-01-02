@@ -207,10 +207,8 @@ export default {
     changeSourceCodeEdit: '切换为源码编辑模式',
     shortcutKeys: '快捷键',
     ai: 'AI对话',
-    downloadClient: '下载客户端',
     site: '官方网站',
-    current: '当前：',
-    downloadDesc: '可从如下地址下载：'
+    current: '当前：'
   },
   nodeHyperlink: {
     title: '超链接',

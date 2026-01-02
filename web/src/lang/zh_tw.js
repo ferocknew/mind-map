@@ -208,10 +208,8 @@ export default {
     changeSourceCodeEdit: '切換為原始碼編輯模式',
     shortcutKeys: '快捷鍵',
     ai: 'AI對話',
-    downloadClient: '下載客戶端',
     site: '官方網站',
-    current: '當前：',
-    downloadDesc: '可從如下地址下載：'
+    current: '當前：'
   },
   nodeHyperlink: {
     title: '超連結',

@@ -40,6 +40,13 @@ module.exports = {
     }
   },
   devServer: {
+    hot: true,
+    liveReload: true,
+    watchOptions: {
+      ignored: /node_modules/,
+      aggregateTimeout: 300,
+      poll: false
+    },
     proxy: {
       '^/api/v3/': {
         target: 'http://ark.cn-beijing.volces.com',

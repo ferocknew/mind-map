@@ -104,10 +104,6 @@
             <span class="iconfont iconAIshengcheng"></span>
             {{ $t('navigatorToolbar.ai') }}
           </el-dropdown-item>
-          <el-dropdown-item command="client">
-            <span class="iconfont iconxiazai"></span>
-            {{ $t('navigatorToolbar.downloadClient') }}
-          </el-dropdown-item>
           <el-dropdown-item command="github">
             <span class="iconfont icongithub"></span>
             Github
@@ -208,13 +204,6 @@ export default {
         return
       } else if (command === 'aiChat') {
         this.setActiveSidebar('ai')
-        return
-      } else if (command === 'client') {
-        this.$bus.$emit(
-          'showDownloadTip',
-          this.$t('navigatorToolbar.downloadClient'),
-          this.$t('navigatorToolbar.downloadDesc')
-        )
         return
       }
       let url = ''

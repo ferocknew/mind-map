@@ -28,7 +28,6 @@
     <Theme v-if="mindMap" :data="mindMapData" :mindMap="mindMap"></Theme>
     <Structure :mindMap="mindMap"></Structure>
     <ShortcutKey></ShortcutKey>
-    <Contextmenu v-if="mindMap" :mindMap="mindMap"></Contextmenu>
     <RichTextToolbar v-if="mindMap" :mindMap="mindMap"></RichTextToolbar>
     <NodeNoteContentShow
       v-if="mindMap"
@@ -98,7 +97,6 @@ import Structure from './Structure.vue'
 import Count from './Count.vue'
 import NavigatorToolbar from './NavigatorToolbar.vue'
 import ShortcutKey from './ShortcutKey.vue'
-import Contextmenu from './Contextmenu.vue'
 import RichTextToolbar from './RichTextToolbar.vue'
 import NodeNoteContentShow from './NodeNoteContentShow.vue'
 import { getData, getConfig, storeData } from '@/api'
@@ -166,7 +164,6 @@ export default {
     Count,
     NavigatorToolbar,
     ShortcutKey,
-    Contextmenu,
     RichTextToolbar,
     NodeNoteContentShow,
     Navigator,
@@ -244,7 +241,6 @@ export default {
     this.$bus.$on('localStorageExceeded', this.onLocalStorageExceeded)
     window.addEventListener('resize', this.handleResize)
     this.$bus.$on('showDownloadTip', this.showDownloadTip)
-    this.webTip()
   },
   beforeDestroy() {
     this.$bus.$off('execCommand', this.execCommand)

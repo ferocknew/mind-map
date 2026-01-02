@@ -212,10 +212,8 @@ export default {
     changeSourceCodeEdit: 'Chuyển sang chế độ chỉnh sửa mã nguồn',
     shortcutKeys: 'Phím tắt',
     ai: 'Đối thoại AI',
-    downloadClient: 'Tải về khách hàng',
     site: 'Trang web chính thức',
-    current: 'Hiện tại:',
-    downloadDesc: 'Có thể download từ địa chỉ sau:'
+    current: 'Hiện tại:'
   },
   nodeHyperlink: {
     title: 'Liên kết',
