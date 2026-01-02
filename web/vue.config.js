@@ -97,6 +97,7 @@ module.exports = {
       '^/proxy/search': {
         target: 'http://placeholder.com',
         changeOrigin: true,
+        timeout: 30000, // 30 秒超时
         router: function (req) {
           // 从请求头获取真正的目标地址
           const targetUrl = req.headers['x-search-url']
@@ -133,6 +134,14 @@ module.exports = {
               proxyReq.setHeader('Authorization', authHeader)
             }
           }
+          // 设置更长的超时时间
+          proxyReq.setTimeout(30000)
+        },
+        proxyTimeout: 30000,
+        onError: function (err, req, res) {
+          console.error('[Search Proxy] Error:', err.message)
+          res.writeHead(504, { 'Content-Type': 'text/plain' })
+          res.end('Proxy Error: ' + err.message)
         }
       }
     }

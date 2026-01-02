@@ -106,11 +106,11 @@ export default {
                 console.log('[Tool: search_server] 响应数据结构:', JSON.stringify(Object.keys(data), null, 2))
                 console.log('[Tool: search_server] 原始结果数量:', data.results?.length || 0)
 
-                // 提取有用信息，减少 token
+                // 提取有用信息，返回最多 20 个结果
                 // SearXNG json format usually has 'results' array
                 const results = data.results || []
 
-                const simplifiedResults = results.slice(0, 5).map(item => ({
+                const simplifiedResults = results.slice(0, 20).map(item => ({
                     title: item.title,
                     url: item.url,
                     content: item.content
@@ -185,7 +185,7 @@ export default {
 
                 console.log('[Tool: search_server] 原始结果数量:', results.length)
 
-                const simplifiedResults = results.slice(0, 5).map(item => ({
+                const simplifiedResults = results.slice(0, 20).map(item => ({
                     title: item.title || item.text,
                     url: item.href || item.link || item.url,
                     content: item.body || item.snippet || item.desc || ''

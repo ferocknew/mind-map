@@ -4,6 +4,7 @@ import delete_node from './tools/delete_node'
 import update_node from './tools/update_node'
 import overwrite_map from './tools/overwrite_map'
 import search_server from './tools/search_server'
+import fetch_web_to_md from './tools/fetch_web_to_md'
 
 // 注册所有工具
 const tools = {
@@ -12,7 +13,8 @@ const tools = {
     delete_node,
     update_node,
     overwrite_map,
-    search_server
+    search_server,
+    fetch_web_to_md
 }
 
 /**
