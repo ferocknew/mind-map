@@ -6,20 +6,24 @@
 // 过滤掉不必要的字段，减少 token 消耗
 const filterData = (data) => {
     const newData = {
-        text: data.data.text,
-        uid: data.data.uid
+        data: {
+            text: data.data.text,
+            uid: data.data.uid
+        }
     }
 
     // 保留重要属性
-    if (data.data.note) newData.note = data.data.note
-    if (data.data.hyperlink) newData.hyperlink = data.data.hyperlink
-    if (data.data.image) newData.image = data.data.image
-    if (data.data.imageTitle) newData.imageTitle = data.data.imageTitle
-    if (data.data.expand === false) newData.expand = false // 只在收起时保留
+    if (data.data.note) newData.data.note = data.data.note
+    if (data.data.hyperlink) newData.data.hyperlink = data.data.hyperlink
+    if (data.data.image) newData.data.image = data.data.image
+    if (data.data.imageTitle) newData.data.imageTitle = data.data.imageTitle
+    if (data.data.expand === false) newData.data.expand = false // 只在收起时保留
 
     // 递归处理子节点
     if (data.children && data.children.length > 0) {
         newData.children = data.children.map(child => filterData(child))
+    } else {
+        newData.children = []
     }
 
     return newData
