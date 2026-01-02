@@ -1,23 +1,19 @@
+import BaseAdapter from './base'
+import { DEFAULT_AI_CONFIG } from '@/utils/config'
+
 /**
  * Anthropic 接口适配器
  * 支持 Claude API
  */
-class AnthropicAdapter {
+class AnthropicAdapter extends BaseAdapter {
     constructor() {
-        this.headers = {}
-        this.data = {}
-        this.api = ''
-        this.originalApi = '' // 保存原始 API 地址，用于代理
-        this.method = 'POST'
+        super()
+        // ...
     }
 
     /**
      * 初始化适配器
      * @param {Object} options - 配置选项
-     * @param {string} options.api - API 基础地址
-     * @param {string} options.key - API 密钥
-     * @param {string} options.model - 模型名称
-     * @param {string} options.method - 请求方法
      */
     init(options = {}) {
         let api = options.api || ''
@@ -46,18 +42,17 @@ class AnthropicAdapter {
             'anthropic-version': '2023-06-01',
             'anthropic-dangerous-direct-browser-access': 'true'
         }
+
+        // Configurable Parameters
+        // Configurable Parameters
+        const maxTokens = options.maxTokens !== undefined ? parseInt(options.maxTokens) : DEFAULT_AI_CONFIG.maxTokens
+        this.maxContext = options.maxContext !== undefined ? parseInt(options.maxContext) : DEFAULT_AI_CONFIG.maxContext
+
         this.data = {
             model: options.model || 'claude-3-5-sonnet-20241022',
-            max_tokens: 4096,
+            max_tokens: maxTokens,
             stream: true
         }
-    }
-
-    /**
-     * 判断是否开发环境
-     */
-    isDev() {
-        return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     }
 
     /**
@@ -66,10 +61,113 @@ class AnthropicAdapter {
      * @returns {string} JSON 字符串
      */
     buildRequestBody(data) {
-        return JSON.stringify({
-            ...this.data,
-            messages: data.messages
+        let messages = []
+        let system = ''
+
+        // 1. 处理消息格式转换
+        data.messages.forEach(msg => {
+            if (msg.role === 'system') {
+                system = msg.content
+                return
+            }
+
+            // 处理工具返回结果: role:tool -> role:user (content: tool_result)
+            if (msg.role === 'tool') {
+                messages.push({
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'tool_result',
+                            tool_use_id: msg.tool_call_id,
+                            content: msg.content
+                        }
+                    ]
+                })
+                return
+            }
+
+            // 处理助手调用工具: role:assistant (tool_calls) -> role:assistant (content: tool_use)
+            if (msg.role === 'assistant' && msg.tool_calls) {
+                const content = []
+                // 如果有文本内容，先添加文本
+                if (msg.content) {
+                    content.push({
+                        type: 'text',
+                        text: msg.content
+                    })
+                }
+                // 添加工具调用
+                msg.tool_calls.forEach(tool => {
+                    content.push({
+                        type: 'tool_use',
+                        id: tool.id,
+                        name: tool.function.name,
+                        input: JSON.parse(tool.function.arguments)
+                    })
+                })
+                messages.push({
+                    role: 'assistant',
+                    content: content
+                })
+                return
+            }
+
+            // 普通用户消息或助手消息
+            messages.push(msg)
         })
+
+        // 2. Max Context Handling (Heuristic: 1 token ~= 4 chars)
+        if (this.maxContext > 0) {
+            const charLimit = this.maxContext * 4
+            let currentChars = system.length
+
+            // Calculate initial length
+            // Note: This is a rough approximation. 
+            // We should ideally traverse from the end to the beginning to keep recent messages.
+
+            // Reverse messages to count from newest
+            const reversedMessages = [...messages].reverse()
+            const keptMessages = []
+
+            for (const msg of reversedMessages) {
+                let msgLength = 0
+                if (typeof msg.content === 'string') {
+                    msgLength = msg.content.length
+                } else if (Array.isArray(msg.content)) {
+                    msgLength = JSON.stringify(msg.content).length
+                }
+
+                if (currentChars + msgLength > charLimit) {
+                    break
+                }
+
+                currentChars += msgLength
+                keptMessages.unshift(msg)
+            }
+
+            messages = keptMessages
+        }
+
+        const payload = {
+            ...this.data,
+            messages: messages
+        }
+
+        if (system) {
+            payload.system = system
+        }
+
+        const tools = this.getTools()
+        if (tools && tools.length > 0) {
+            // 转换工具定义格式: OpenAI function -> Anthropic tool input_schema
+            payload.tools = tools.map(tool => ({
+                name: tool.function.name,
+                description: tool.function.description,
+                input_schema: tool.function.parameters
+            }))
+        }
+
+        return JSON.stringify(payload)
     }
 
     /**
@@ -95,7 +193,7 @@ class AnthropicAdapter {
      * 处理流式响应
      * @param {string} chunk - 响应数据块
      * @param {string} currentChunk - 当前不完整的数据块
-     * @returns {Object} { content, isEnd, remainingChunk }
+     * @returns {Object} { content, isEnd, remainingChunk, toolCalls }
      */
     handleStream(chunk, currentChunk = '') {
         chunk = chunk.trim()
@@ -107,6 +205,7 @@ class AnthropicAdapter {
         let content = ''
         let isEnd = false
         let remainingChunk = ''
+        let toolCalls = []
 
         if (chunk.includes('message_stop')) {
             isEnd = true
@@ -139,13 +238,50 @@ class AnthropicAdapter {
                             content += data.delta.text
                         }
                     }
+
+                    // Claude tool use streaming is different (content_block_start -> content_block_delta type=input_json_delta)
+                    // Handling streaming tool calls for Claude is complex. 
+                    // For simplicity, we might only handle the final 'message_stop' or accumulate in 'ai.js' if possible.
+                    // Or we check for 'content_block_start' with 'tool_use'.
+
+                    // Note: Claude returns `tool_use` block first, then streams `input_json_delta` inside it.
+                    // This is much harder to parse in a simple loop without a state machine.
+                    // For MVP, we might defer tool use to non-streaming or try to capture it.
+                    // Let's attempt to capture standard tool_use events if present in specific blocks.
+
+                    /* 
+                       Claude Stream Format for Tools:
+                       event: content_block_start
+                       data: {"type": "content_block_start", "index": 1, "content_block": {"type": "tool_use", "id": "toolu_01...", "name": "get_weather", "input": {}}}
+                       
+                       event: content_block_delta
+                       data: {"type": "content_block_delta", "index": 1, "delta": {"type": "input_json_delta", "partial_json": "{\"loc"}}
+                    */
+
+                    if (data.type === 'content_block_start' && data.content_block && data.content_block.type === 'tool_use') {
+                        toolCalls.push({
+                            type: 'tool_use_start',
+                            id: data.content_block.id,
+                            name: data.content_block.name,
+                            index: data.index
+                        })
+                    }
+
+                    if (data.type === 'content_block_delta' && data.delta && data.delta.type === 'input_json_delta') {
+                        toolCalls.push({
+                            type: 'tool_use_delta',
+                            partial_json: data.delta.partial_json,
+                            index: data.index
+                        })
+                    }
+
                 } catch (e) {
                     console.warn('解析 Anthropic 响应失败:', e)
                 }
             }
         }
 
-        return { content, isEnd, remainingChunk }
+        return { content, isEnd, remainingChunk, toolCalls }
     }
 }
 

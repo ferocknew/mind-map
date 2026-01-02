@@ -1,23 +1,19 @@
+import BaseAdapter from './base'
+import { DEFAULT_AI_CONFIG } from '@/utils/config'
+
 /**
  * OpenAI 兼容接口适配器
  * 支持 OpenAI、火山引擎、DeepSeek、智谱 AI 等兼容 OpenAI 格式的 API
  */
-class OpenAIAdapter {
+class OpenAIAdapter extends BaseAdapter {
     constructor() {
-        this.headers = {}
-        this.data = {}
-        this.api = ''
-        this.originalApi = '' // 保存原始 API 地址，用于代理
-        this.method = 'POST'
+        super()
+        // ... (rest of constructor is handled by super or implicit)
     }
 
     /**
      * 初始化适配器
      * @param {Object} options - 配置选项
-     * @param {string} options.api - API 地址
-     * @param {string} options.key - API 密钥
-     * @param {string} options.model - 模型名称
-     * @param {string} options.method - 请求方法
      */
     init(options = {}) {
         let api = options.api || ''
@@ -44,17 +40,19 @@ class OpenAIAdapter {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + options.key
         }
+
+        // Configurable Parameters
+        // Configurable Parameters
+        const maxTokens = options.maxTokens !== undefined ? parseInt(options.maxTokens) : DEFAULT_AI_CONFIG.maxTokens
+        this.maxContext = options.maxContext !== undefined ? parseInt(options.maxContext) : DEFAULT_AI_CONFIG.maxContext
+
         this.data = {
             model: options.model,
-            stream: true
+            max_tokens: maxTokens,
+            stream: true,
+            // 注入工具定义
+            tools: this.getTools()
         }
-    }
-
-    /**
-     * 判断是否开发环境
-     */
-    isDev() {
-        return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     }
 
     /**
@@ -63,10 +61,54 @@ class OpenAIAdapter {
      * @returns {string} JSON 字符串
      */
     buildRequestBody(data) {
-        return JSON.stringify({
+        // OpenAI format: tools are at the top level usually
+        // But we put them in this.data in init
+
+        // Handle Max Context
+        let messages = data.messages || []
+
+        if (this.maxContext > 0 && messages.length > 0) {
+            const charLimit = this.maxContext * 4
+            let currentChars = 0
+
+            // Keep system prompt if it's the first message
+            let systemMsg = null
+            let otherMessages = [...messages]
+
+            if (otherMessages.length > 0 && otherMessages[0].role === 'system') {
+                systemMsg = otherMessages.shift()
+                currentChars += systemMsg.content.length
+            }
+
+            const keptMessages = []
+            const reversedMessages = otherMessages.reverse()
+
+            for (const msg of reversedMessages) {
+                const msgLength = msg.content ? msg.content.length : 0
+                if (currentChars + msgLength > charLimit) {
+                    break
+                }
+                currentChars += msgLength
+                keptMessages.unshift(msg)
+            }
+
+            messages = systemMsg ? [systemMsg, ...keptMessages] : keptMessages
+        }
+
+        // Ensure tools is removed if empty to avoid API errors on some providers
+        const payload = {
             ...this.data,
-            ...data
-        })
+            ...data,
+            messages: messages
+        }
+
+        const tools = this.getTools()
+        if (tools && tools.length > 0) {
+            payload.tools = tools
+            payload.tool_choice = 'auto'
+        }
+
+        return JSON.stringify(payload)
     }
 
     /**
@@ -92,7 +134,7 @@ class OpenAIAdapter {
      * 处理流式响应
      * @param {string} chunk - 响应数据块
      * @param {string} currentChunk - 当前不完整的数据块
-     * @returns {Object} { content, isEnd, remainingChunk }
+     * @returns {Object} { content, isEnd, remainingChunk, toolCalls }
      */
     handleStream(chunk, currentChunk = '') {
         chunk = chunk.trim()
@@ -105,6 +147,7 @@ class OpenAIAdapter {
         let content = ''
         let isEnd = false
         let remainingChunk = ''
+        let toolCalls = []
 
         // 检查结束标记
         if (chunk.includes('[DONE]')) {
@@ -131,10 +174,21 @@ class OpenAIAdapter {
                 const jsonStr = line.replace(/^data:\s*/, '')
                 if (!jsonStr || jsonStr === '[DONE]') continue
                 const data = JSON.parse(jsonStr)
+
                 if (data.choices && data.choices.length > 0) {
                     const delta = data.choices[0].delta
+
+                    // 1. 处理普通文本
                     if (delta && delta.content) {
                         content += delta.content
+                    }
+
+                    // 2. 处理 Function Calling (工具调用)
+                    if (delta && delta.tool_calls) {
+                        // OpenAI 流式返回 tool_calls 是分片的
+                        // 我们需要累积这些分片，通常在 ai.js 中处理累积
+                        // 这里只返回当前切片信息
+                        toolCalls.push(...delta.tool_calls)
                     }
                 }
             } catch (e) {
@@ -142,7 +196,7 @@ class OpenAIAdapter {
             }
         }
 
-        return { content, isEnd, remainingChunk }
+        return { content, isEnd, remainingChunk, toolCalls }
     }
 }
 

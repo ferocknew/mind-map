@@ -1,8 +1,16 @@
 import add_node from './tools/add_node'
+import read_map from './tools/read_map'
+import delete_node from './tools/delete_node'
+import update_node from './tools/update_node'
+import overwrite_map from './tools/overwrite_map'
 
 // 注册所有工具
 const tools = {
-    add_node
+    add_node,
+    read_map,
+    delete_node,
+    update_node,
+    overwrite_map
 }
 
 /**

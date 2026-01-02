@@ -16,3 +16,12 @@ export const DEFAULT_AI_RULES = `你是一个专业的思维导图助手，旨�
 - 如果用户的指令模糊，请先询问澄清。
 - 在生成内容时，使用 Markdown 格式（如果不是通过工具调用）。
 `
+
+// 默认配置
+export const DEFAULT_AI_CONFIG = {
+    // 默认上下文 (128k)
+    maxContext: 128000,
+    // 默认输出 Token (96k for Claude / 4k for standard)
+    // Note: User requested 96k, which is suitable for high-end models like Claude-3-5-Sonnet
+    maxTokens: 96000
+}

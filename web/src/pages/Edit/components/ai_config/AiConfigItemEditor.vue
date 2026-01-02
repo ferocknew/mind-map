@@ -37,6 +37,16 @@
       <el-form-item :label="$t('ai.modelName')" prop="model">
         <el-input v-model="form.model" :placeholder="$t('ai.modelNamePlaceholder')"></el-input>
       </el-form-item>
+
+      <el-form-item :label="$t('ai.maxContext')" prop="maxContext">
+        <el-input-number v-model="form.maxContext" :min="0" :step="100" style="width: 100%"></el-input-number>
+        <div class="tip">{{ $t('ai.maxContextTip') }}</div>
+      </el-form-item>
+
+      <el-form-item :label="$t('ai.maxTokens')" prop="maxTokens">
+        <el-input-number v-model="form.maxTokens" :min="0" :step="100" style="width: 100%"></el-input-number>
+        <div class="tip">{{ $t('ai.maxTokensTip') }}</div>
+      </el-form-item>
     </el-form>
 
     <div slot="footer" class="dialog-footer">
@@ -47,6 +57,8 @@
 </template>
 
 <script>
+import { DEFAULT_AI_CONFIG } from '@/utils/config'
+
 export default {
   name: 'AiConfigItemEditor',
   props: {
@@ -67,7 +79,9 @@ export default {
         type: 'OpenAI',
         api: '',
         key: '',
-        model: ''
+        model: '',
+        maxContext: DEFAULT_AI_CONFIG.maxContext,
+        maxTokens: DEFAULT_AI_CONFIG.maxTokens
       },
       rules: {
         name: [{ required: true, message: this.$t('ai.required'), trigger: 'blur' }],
@@ -96,7 +110,11 @@ export default {
       handler(val) {
         if (val) {
           if (this.editData) {
-            this.form = { ...this.editData }
+            this.form = {
+              maxContext: DEFAULT_AI_CONFIG.maxContext,
+              maxTokens: DEFAULT_AI_CONFIG.maxTokens,
+              ...this.editData
+            }
           } else {
             this.resetForm()
           }
@@ -111,7 +129,11 @@ export default {
   created() {
     // 组件创建时，如果有编辑数据则填充表单
     if (this.editData) {
-      this.form = { ...this.editData }
+      this.form = {
+        maxContext: DEFAULT_AI_CONFIG.maxContext,
+        maxTokens: DEFAULT_AI_CONFIG.maxTokens,
+        ...this.editData
+      }
     }
   },
   methods: {
@@ -122,7 +144,9 @@ export default {
         type: 'OpenAI',
         api: '',
         key: '',
-        model: ''
+        model: '',
+        maxContext: DEFAULT_AI_CONFIG.maxContext,
+        maxTokens: DEFAULT_AI_CONFIG.maxTokens
       }
     },
     save() {

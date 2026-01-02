@@ -260,7 +260,7 @@ export default {
       this.aiCreatingMaskVisible = true
       // 发起请求
       this.isAiCreating = true
-      this.aiInstance = new Ai()
+      this.aiInstance = new Ai(this.mindMap)
       this.aiInstance.init('huoshan', this.effectiveConfig)
       this.mindMap.renderer.setRootNodeCenter()
       this.mindMap.setData(null)
@@ -460,7 +460,7 @@ export default {
         this.aiCreatingMaskVisible = true
         // 发起请求
         this.isAiCreating = true
-        this.aiInstance = new Ai()
+        this.aiInstance = new Ai(this.mindMap)
         this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
@@ -576,7 +576,7 @@ export default {
         await this.aiTest()
         // 发起请求
         this.isAiCreating = true
-        this.aiInstance = new Ai()
+        this.aiInstance = new Ai(this.mindMap)
         this.aiInstance.init('huoshan', this.effectiveConfig)
         this.aiInstance.request(
           {
