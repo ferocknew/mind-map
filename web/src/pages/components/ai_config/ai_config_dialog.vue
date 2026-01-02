@@ -128,6 +128,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import AiLocalConfigManager from './ai_local_config_manager.vue'
+import { DEFAULT_AI_RULES } from '@/utils/config'
 
 export default {
   name: 'AiConfigDialog',
@@ -176,7 +177,8 @@ export default {
         } else {
             this.accessPassword = ''
         }
-        this.aiSystemPrompt = this.aiConfig.aiSystemPrompt || ''
+        // 如果 aiSystemPrompt 为空，则使用默认规则
+        this.aiSystemPrompt = this.aiConfig.aiSystemPrompt || DEFAULT_AI_RULES
       }
     },
     dialogVisible(val) {
