@@ -40,8 +40,34 @@ export default {
             // 假设传入的是标准格式或 read_map 返回的格式
 
             // 还原为 simple-mind-map 可接受的格式
-            // 如果传入的是 { text: "Root", children: [...] } 这种直接作为 root 数据
+            // 还原为 simple-mind-map 可接受的格式
+            // 如果传入的是 { text: "Root", children: [...] } 这种扁平化格式，需要转换为 { data: { text: "Root" }, children: [...] }
+            const transformData = (node) => {
+                const addData = {}
+                // 将非 children 属性移动到 data 对象中
+                Object.keys(node).forEach(key => {
+                    if (key !== 'children') {
+                        addData[key] = node[key]
+                    }
+                })
+
+                const newNode = {
+                    data: addData,
+                    children: []
+                }
+
+                if (node.children && Array.isArray(node.children)) {
+                    newNode.children = node.children.map(child => transformData(child))
+                }
+
+                return newNode
+            }
+
+            // 判断是否是不带 data 属性的扁平结构（特征：直接有 text 属性，且没有 data 属性）
             let rootData = data
+            if (data.text !== undefined && !data.data) {
+                rootData = transformData(data)
+            }
 
             // 设置数据
             mindMap.setData(rootData)
