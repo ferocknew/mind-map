@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue'
+import Sidebar from './sidebar/index.vue'
 import { storeData } from '@/api'
 import { mapState } from 'vuex'
 import { layoutImgMap } from '@/config/constant.js'

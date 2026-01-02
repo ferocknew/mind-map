@@ -18,7 +18,10 @@ export const chatMixin = {
       chatList: [],
       isCreating: false,
       currentSessionId: null,
-      themeColor: ''
+      themeColor: '',
+      sidebarWidth: 300,
+      defaultWidth: 300,
+      expandedWidth: 600
     }
   },
   computed: {
@@ -284,6 +287,14 @@ export const chatMixin = {
         const color = this.mindMap.renderer.root.getStyle('color')
         this.themeColor = color
       }
+    },
+
+    expandWidth() {
+      this.sidebarWidth = this.expandedWidth
+    },
+
+    restoreWidth() {
+      this.sidebarWidth = this.defaultWidth
     }
   }
 }

@@ -372,7 +372,7 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue'
+import Sidebar from './sidebar/index.vue'
 import { storeConfig } from '@/api'
 import { mapState, mapMutations } from 'vuex'
 import Color from './Color.vue'

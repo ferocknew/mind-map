@@ -533,7 +533,9 @@ export default {
     newChat: 'New Chat',
     historyRecords: 'History',
     resend: 'Resend',
-    regenerate: 'Regenerate'
+    regenerate: 'Regenerate',
+    expandWidth: 'Expand width',
+    restoreWidth: 'Restore width'
   },
   note: {
     title: 'Note'

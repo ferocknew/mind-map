@@ -578,7 +578,9 @@ export default {
     newChat: '新建对话',
     historyRecords: '历史记录',
     resend: '重新发送',
-    regenerate: '重新生成'
+    regenerate: '重新生成',
+    expandWidth: '扩展宽度',
+    restoreWidth: '恢复宽度'
   },
   note: {
     title: '备注'

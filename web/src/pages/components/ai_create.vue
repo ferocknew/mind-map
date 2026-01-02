@@ -111,7 +111,7 @@ import {
   getStrWithBrFromHtml
 } from 'simple-mind-map/src/utils'
 import { mapState } from 'vuex'
-import AiConfigDialog from './ai_config/ai_config_dialog'
+import AiConfigDialog from './ai_config/ai_config_dialog/index.vue'
 import { DEFAULT_AI_RULES } from '@/utils/config'
 
 export default {

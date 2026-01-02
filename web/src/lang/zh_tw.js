@@ -513,7 +513,9 @@ export default {
     newChat: '新建對話',
     historyRecords: '歷史記錄',
     resend: '重新發送',
-    regenerate: '重新生成'
+    regenerate: '重新生成',
+    expandWidth: '擴展寬度',
+    restoreWidth: '恢復寬度'
   },
   note: {
     title: '備註'

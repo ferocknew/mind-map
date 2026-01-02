@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue'
+import Sidebar from './sidebar/index.vue'
 import { shortcutKeyList } from '@/config'
 import { mapState } from 'vuex'
 

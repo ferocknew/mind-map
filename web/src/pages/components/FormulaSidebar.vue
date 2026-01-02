@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue'
+import Sidebar from './sidebar/index.vue'
 import { mapState, mapMutations } from 'vuex'
 import { formulaList } from '@/config/constant'
 

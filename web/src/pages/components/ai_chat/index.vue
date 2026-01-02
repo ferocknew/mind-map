@@ -1,5 +1,5 @@
 <template>
-  <Sidebar ref="sidebar" :title="$t('ai.chatTitle')">
+  <Sidebar ref="sidebar" :title="$t('ai.chatTitle')" :width="sidebarWidth">
     <div class="aiChatBox" :class="{ isDark: isDark }">
       <div class="chatHeader">
         <div class="left-btn-group">
@@ -15,6 +15,11 @@
               <el-button size="mini" circle @click="showHistory">
                 <i class="el-icon-time"></i>
               </el-button>
+            </el-tooltip>
+            <el-tooltip :content="sidebarWidth > defaultWidth ? $t('ai.restoreWidth') : $t('ai.expandWidth')" placement="bottom">
+               <el-button size="mini" circle @click="sidebarWidth > defaultWidth ? restoreWidth() : expandWidth()">
+                 <i :class="sidebarWidth > defaultWidth ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"></i>
+               </el-button>
             </el-tooltip>
             <el-tooltip :content="$t('ai.modifyAIConfiguration')" placement="bottom">
                <el-button size="mini" circle @click="modifyAiConfig">
@@ -101,7 +106,7 @@
 
 <script>
 import { chatMixin } from './index.js'
-import Sidebar from '../Sidebar.vue'
+import Sidebar from '../sidebar/index.vue'
 import AiChatHistory from '../ai_chat_history.vue'
 
 export default {

@@ -513,7 +513,7 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue'
+import Sidebar from './sidebar/index.vue'
 import Color from './Color.vue'
 import {
   fontFamilyList,
