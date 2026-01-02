@@ -352,5 +352,5 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-@import url('../../../style/outlineTree.less');
+@import url('@/style/outlineTree.less');
 </style>
