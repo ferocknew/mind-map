@@ -18,6 +18,7 @@ const filterData = (data) => {
     if (data.data.image) newData.data.image = data.data.image
     if (data.data.imageTitle) newData.data.imageTitle = data.data.imageTitle
     if (data.data.expand === false) newData.data.expand = false // 只在收起时保留
+    if (data.data.richText) newData.data.richText = true // 保留富文本标记
 
     // 递归处理子节点
     if (data.children && data.children.length > 0) {

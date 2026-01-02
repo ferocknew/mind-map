@@ -209,7 +209,7 @@ class AnthropicAdapter extends BaseAdapter {
 
         // 调试日志
         if (chunk.length > 0) {
-            console.log('[Anthropic] 接收到数据块，长度:', chunk.length, '前100字符:', chunk.substring(0, 100))
+//            console.log('[Anthropic] 接收到数据块，长度:', chunk.length, '前100字符:', chunk.substring(0, 100))
         }
 
         if (chunk.includes('message_stop')) {
