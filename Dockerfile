@@ -1,7 +1,7 @@
 FROM node:24.9.0-alpine
 
-# 安装 pnpm 和静态服务器
-RUN npm install -g pnpm serve
+# 安装 pnpm
+RUN npm install -g pnpm
 
 WORKDIR /app
 
@@ -13,13 +13,10 @@ COPY simple-mind-map/package*.json ./simple-mind-map/
 # 安装依赖
 RUN pnpm install --frozen-lockfile
 
-# 复制源代码
+# 复制源代码和运行脚本
 COPY . /app/
-
-# 构建生产版本
-RUN pnpm --filter thoughts run build
 
 EXPOSE 8080
 
-# 启动应用，使用 serve 提供静态文件
-CMD ["serve", "-s", "-l", "8080", "/app/dist"]
+# 使用 run.sh 启动开发服务器
+CMD sh run.sh dev
