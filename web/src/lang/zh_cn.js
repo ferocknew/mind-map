@@ -573,7 +573,12 @@ export default {
     // 全局规则
     globalRules: '全局规则',
     globalRulesDesc: '设置 AI 的全局行为规则或人设 (System Prompt)',
-    globalRulesPlaceholder: '例如：你是一个思维导图专家，请用简洁的语言回答...'
+    globalRulesPlaceholder: '例如：你是一个思维导图专家，请用简洁的语言回答...',
+    // 新增
+    newChat: '新建对话',
+    historyRecords: '历史记录',
+    resend: '重新发送',
+    regenerate: '重新生成'
   },
   note: {
     title: '备注'

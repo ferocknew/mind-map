@@ -528,7 +528,12 @@ export default {
     aiCreatePartMsgPostfix: '】The subordinate content of the node',
     aiCreatePartMsgHelp:
       '. Needs to be returned in Markdown format and can only use two syntax: Markdown title and unordered list. It can support multi-level nesting. Just return the content.',
-    aiCreatePart: 'AI Continuation'
+    aiCreatePart: 'AI Continuation',
+    // New
+    newChat: 'New Chat',
+    historyRecords: 'History',
+    resend: 'Resend',
+    regenerate: 'Regenerate'
   },
   note: {
     title: 'Note'
