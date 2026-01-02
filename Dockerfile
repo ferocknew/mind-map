@@ -1,7 +1,7 @@
 FROM node:24.9.0-alpine
 
-# 安装 pnpm
-RUN npm install -g pnpm
+# 安装 pnpm 和静态服务器
+RUN npm install -g pnpm serve
 
 WORKDIR /app
 
@@ -16,7 +16,10 @@ RUN pnpm install --frozen-lockfile
 # 复制源代码
 COPY . /app/
 
+# 构建生产版本
+RUN pnpm --filter thoughts run build
+
 EXPOSE 8080
 
-# 启动应用，监听 0.0.0.0 以允许外部访问
-CMD ["sh", "-c", "cd /app/web && pnpm serve --host 0.0.0.0"]
+# 启动应用，使用 serve 提供静态文件
+CMD ["serve", "-s", "-l", "8080", "/app/dist"]
